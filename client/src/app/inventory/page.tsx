@@ -4,6 +4,7 @@ import { useGetProductsQuery } from "@/state/api";
 import Header from "../(components)/Header";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AlertCircle } from "react-feather";
+import { Rating } from "@mui/material";
 
 const columns: GridColDef[] = [
   { field: "productId", headerName: "ID", width: 90 },
@@ -18,9 +19,15 @@ const columns: GridColDef[] = [
   {
     field: "rating",
     headerName: "Rating",
-    width: 110,
+    width: 170,
     type: "number",
     valueGetter: (value, row) => (row.rating ? row.rating : "N/A"),
+    renderCell: (params) => (
+      <div className="flex items-center">
+        <Rating defaultValue={params.row.rating || 0} readOnly />
+        {params.row.rating}
+      </div>
+    ),
   },
   {
     field: "stockQuantity",

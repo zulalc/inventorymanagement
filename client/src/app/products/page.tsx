@@ -4,6 +4,14 @@ import { useState } from "react";
 import { AlertCircle, PlusCircle, Search } from "react-feather";
 import Header from "../(components)/Header";
 import { Rating } from "@mui/material";
+import CreateProduct from "@/app/products/CreateProduct";
+
+type ProductFormData = {
+  name: string;
+  price: number;
+  stockQuantity: number;
+  rating: number;
+};
 
 const Products = () => {
   const [searchWord, setSearchWord] = useState("");
@@ -13,6 +21,12 @@ const Products = () => {
     isLoading,
     isError,
   } = useGetProductsQuery(searchWord);
+
+  const [createProduct] = useCreateProductMutation();
+
+  const handleCreateProduct = async (productData: ProductFormData) => {
+    await createProduct(productData);
+  };
   return (
     <div>
       <hr />
@@ -106,6 +120,11 @@ const Products = () => {
                 ))
               )}
             </div>
+            <CreateProduct
+              isOpen={isProductModalOpen}
+              onClose={() => setIsProductModalOpen(false)}
+              onCreate={handleCreateProduct}
+            />
           </div>
         </>
       )}
