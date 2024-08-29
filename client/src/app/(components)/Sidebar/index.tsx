@@ -130,25 +130,6 @@ const Sidebar = () => {
           </div>
         </Link>
 
-        <Link href="/settings">
-          <div
-            className={`cursor-pointer flex items-center ${
-              isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
-            } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/settings" ? "bg-violet-200 text-white" : ""
-            }`}
-          >
-            <Sliders className="w-6 h-6 !text-gray-700" />
-            <span
-              className={`${
-                isSidebarOpen ? "hidden" : "block"
-              } font-medium text-gray-700`}
-            >
-              Settings
-            </span>
-          </div>
-        </Link>
-
         <Link href="/expenses">
           <div
             className={`cursor-pointer flex items-center ${
@@ -164,6 +145,25 @@ const Sidebar = () => {
               } font-medium text-gray-700`}
             >
               Expenses
+            </span>
+          </div>
+        </Link>
+
+        <Link href="/settings">
+          <div
+            className={`cursor-pointer flex items-center ${
+              isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
+            } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
+              usePathname() === "/settings" ? "bg-violet-200 text-white" : ""
+            }`}
+          >
+            <Sliders className="w-6 h-6 !text-gray-700" />
+            <span
+              className={`${
+                isSidebarOpen ? "hidden" : "block"
+              } font-medium text-gray-700`}
+            >
+              Settings
             </span>
           </div>
         </Link>

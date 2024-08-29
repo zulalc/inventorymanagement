@@ -14,13 +14,6 @@ export interface NewProduct {
   stockQuantity: number;
 }
 
-export interface NewProduct {
-  name: string;
-  price: number;
-  rating?: number;
-  stockQuantity: number;
-}
-
 export interface SalesSummary {
   salesSummaryId: string;
   totalValue: number;
@@ -43,6 +36,7 @@ export interface ExpenseSummary {
 
 export interface ExpenseByCategorySummary {
   expenseByCategorySummaryId: string;
+  expenseSummaryId: string;
   category: string;
   amount: string;
   date: string;
@@ -65,7 +59,7 @@ export interface User {
 export const api = createApi({
   reducerPath: "api",
   baseQuery: fetchBaseQuery({ baseUrl: process.env.NEXT_PUBLIC_API_BASE_URL }),
-  tagTypes: ["DashboardData", "Products"], //re fetch
+  tagTypes: ["DashboardData", "Products", "Users", "Expenses"], //re fetch
   endpoints: (build) => ({
     getDashboardData: build.query<DashboardData, void>({
       query: () => "/dashboard",
@@ -92,6 +86,18 @@ export const api = createApi({
       }),
       invalidatesTags: ["Products"], //automatically sends another api request and get new list of products
     }),
+
+    getUsers: build.query<User[], string | void>({
+      query: (search) => ({
+        url: "/users",
+        params: search ? { search } : {},
+      }),
+      providesTags: ["Users"],
+    }),
+    getExpensesByCategory: build.query<ExpenseByCategorySummary[], void>({
+      query: () => "/expenses",
+      providesTags: ["Expenses"],
+    }),
   }),
 });
 
@@ -100,4 +106,6 @@ export const {
   useGetDashboardTimelyDataQuery,
   useGetProductsQuery,
   useCreateProductMutation,
+  useGetUsersQuery,
+  useGetExpensesByCategoryQuery,
 } = api;
