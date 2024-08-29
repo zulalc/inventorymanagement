@@ -74,6 +74,17 @@ const Inventory = () => {
               getRowId={(row) => row.productId}
               checkboxSelection
               className="bg-white shadow rounded-lg border border-gray-00 mt-5 !text-gray-700"
+              sx={{
+                "& .Mui-checked": {
+                  color: "#8b5cf6 !important",
+                },
+                "& .MuiCheckbox-indeterminate .MuiSvgIcon-root": {
+                  color: "#8b5cf6",
+                },
+                "& .MuiDataGrid-cell:hover": {
+                  color: "#8b5cf6",
+                },
+              }}
             />
           </div>
         </>
