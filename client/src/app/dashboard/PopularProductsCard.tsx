@@ -10,7 +10,7 @@ const PopularProductsCard = () => {
     isError,
   } = useGetDashboardDataQuery();
   return (
-    <div className="row-span-3 xl:row-span-6 bg-white shadow-md rounded-2xl pb-16">
+    <div className="row-span-3 xl:row-span-4 bg-white shadow-md rounded-2xl pb-16">
       <h3 className="text-lg font-semibold px-7 pt-5 pb-2">Best Sellers</h3>
       <hr />
       {isLoading ? (

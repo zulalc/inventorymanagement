@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createProduct = exports.getProducts = void 0;
+exports.updateProduct = exports.deleteProduct = exports.createProduct = exports.getProducts = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -51,3 +51,65 @@ const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.createProduct = createProduct;
+const deleteProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { productId } = req.params;
+        const product = yield prisma.products.findUnique({
+            where: { productId },
+        });
+        if (!product) {
+            res.status(404).json({ message: "Product not found" });
+        }
+        yield prisma.products.delete({
+            where: { productId },
+        });
+        res.status(200).json({ message: "Product deleted successfully" });
+    }
+    catch (error) {
+        res.status(500).json({ message: "Error deleting product" });
+    }
+});
+exports.deleteProduct = deleteProduct;
+const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    try {
+        const { productId } = req.params;
+        const { name, price, stockQuantity, rating } = req.body;
+        console.log("Data to update:", { name, price, stockQuantity, rating });
+        // Check if the product exists
+        const existingProduct = yield prisma.products.findUnique({
+            where: { productId },
+        });
+        if (!existingProduct) {
+            res.status(404).json({ message: "Product not found" });
+            return;
+        }
+        // Update the product
+        const updatedProduct = yield prisma.products.update({
+            where: { productId },
+            data: {
+                name,
+                price: Number(price),
+                stockQuantity: Number(stockQuantity),
+                rating: Number(rating),
+            },
+        });
+        console.log("Updated product:", updatedProduct);
+        res.status(200).json({
+            message: "Product updated successfully",
+            product: updatedProduct,
+        });
+    }
+    catch (error) {
+        if (error instanceof Error) {
+            console.error("Error updating product:", error.message);
+            res
+                .status(500)
+                .json({ message: "Error updating product", error: error.message });
+        }
+        else {
+            console.error("Unexpected error:", error);
+            res.status(500).json({ message: "Unexpected error" });
+        }
+    }
+});
+exports.updateProduct = updateProduct;

@@ -1,5 +1,5 @@
 import { useGetDashboardDataQuery } from "@/state/api";
-import React, { useEffect } from "react";
+import React from "react";
 import {
   CartesianGrid,
   Legend,
@@ -21,15 +21,13 @@ const IncomeExpenseCard = () => {
 
     return {
       date: item.date,
-      sales: item.totalValue, // Assuming totalValue is income
+      sales: item.totalValue,
       expenses: expense ? expense.totalExpenses : 0,
     };
   });
   return (
     <div className="flex flex-col row-auto xl:row-auto md:col-auto xl:col-auto bg-white shadow-md rounded-2xl">
-      <h3 className="text-lg font-semibold px-7 pt-5 mb-2">
-        Income & Expenses
-      </h3>
+      <h3 className="text-lg font-semibold px-7 pt-5 mb-2">Sales & Expenses</h3>
       <hr />
       {isLoading ? (
         <div
@@ -43,9 +41,12 @@ const IncomeExpenseCard = () => {
       ) : (
         <>
           <div className="mb-2 mt-5 px-1">
-            <p className="text-sm text-gray-400">Income vs Expenses</p>
-            <ResponsiveContainer width="100%" height={300} className="p-2">
-              <LineChart data={combinedData}>
+            <p className="text-sm text-gray-400">Sales vs Expenses</p>
+            <ResponsiveContainer width="100%" height={450} className="p-2">
+              <LineChart
+                data={combinedData}
+                margin={{ top: 20, right: 0, left: -35, bottom: 20 }}
+              >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
                   dataKey="date"

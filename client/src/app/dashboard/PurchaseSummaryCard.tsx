@@ -30,8 +30,8 @@ const PurchaseSummaryCard = () => {
       })
     : "N/A";
   return (
-    <div className="flex flex-col row-auto xl:row-auto md:col-auto xl:col-auto bg-white shadow-md rounded-2xl">
-      <h3 className="text-lg font-semibold px-7 pt-5 mb-2">Purchase Summary</h3>
+    <div className="row-span-1 bg-white shadow-md rounded-2xl">
+      <h3 className="text-lg font-semibold mb-2 px-7 pt-5">Purchase Summary</h3>
       <hr />
       {isLoading ? (
         <div
@@ -45,8 +45,8 @@ const PurchaseSummaryCard = () => {
       ) : (
         <>
           <div>
-            <div className="mb-2 mt-5 px-7">
-              <p className="text-sm text-gray-400">Purchased</p>
+            <div className="mb-4 mt-7 px-7">
+              <p className="text-xs text-gray-400">Purchased</p>
               <div className="flex items-center">
                 <p className="text-2xl font-bold">
                   {dataEndPoint
@@ -71,7 +71,7 @@ const PurchaseSummaryCard = () => {
                 </p>
               )}
             </div>
-            <ResponsiveContainer width="100%" height={200} className="p-2">
+            <ResponsiveContainer width="100%" height={300} className="p-3">
               <AreaChart
                 data={purchaseData}
                 margin={{ top: 0, right: 0, left: -35, bottom: 45 }}

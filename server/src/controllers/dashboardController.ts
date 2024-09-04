@@ -16,6 +16,10 @@ export const getDashboardData = async (
       },
     });
 
+    const users = await prisma.users.findMany({
+      take: 20,
+    });
+
     const salesSummary = await prisma.salesSummary.findMany({
       take: 5,
       orderBy: {
@@ -59,6 +63,7 @@ export const getDashboardData = async (
       purchaseSummary,
       expenseSummary,
       expenseByCategorySummary,
+      users,
     });
   } catch (error) {
     res.status(500).json({ message: "Error retrieving dashboard metrics" });

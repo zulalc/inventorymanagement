@@ -42,18 +42,19 @@ export interface ExpenseByCategorySummary {
   date: string;
 }
 
+export interface User {
+  userId: string;
+  name: string;
+  email: string;
+}
+
 export interface DashboardData {
   popularProducts: Product[];
   salesSummary: SalesSummary[];
   purchaseSummary: PurchaseSummary[];
   expenseSummary: ExpenseSummary[];
   expenseByCategorySummary: ExpenseByCategorySummary[];
-}
-
-export interface User {
-  userId: string;
-  name: string;
-  email: string;
+  users: User[];
 }
 
 export const api = createApi({
@@ -87,6 +88,26 @@ export const api = createApi({
       invalidatesTags: ["Products"], //automatically sends another api request and get new list of products
     }),
 
+    deleteProduct: build.mutation<void, string>({
+      query: (productId) => ({
+        url: `/products/${productId}`,
+        method: "DELETE",
+      }),
+      invalidatesTags: ["Products"],
+    }),
+
+    updateProduct: build.mutation<
+      void,
+      { productId: string; productData: Partial<Product> }
+    >({
+      query: ({ productId, productData }) => ({
+        url: `/products/${productId}`,
+        method: "PUT",
+        body: productData,
+      }),
+      invalidatesTags: ["Products"],
+    }),
+
     getUsers: build.query<User[], string | void>({
       query: (search) => ({
         url: "/users",
@@ -108,4 +129,6 @@ export const {
   useCreateProductMutation,
   useGetUsersQuery,
   useGetExpensesByCategoryQuery,
+  useDeleteProductMutation,
+  useUpdateProductMutation,
 } = api;

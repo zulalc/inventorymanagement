@@ -93,8 +93,8 @@ const SalesSummaryCard = () => {
     : "N/A";
 
   return (
-    <div className="md:row-span-1 xl:row-span-1 bg-white">
-      <h3 className="text-lg font-semibold px-7 pt-5 mb-2">Sales Summary</h3>
+    <div className="row-span-1 bg-white shadow-md rounded-2xl">
+      <h3 className="text-lg font-semibold mb-2 px-7 pt-5">Sales Summary</h3>
       <hr />
       {isLoading ? (
         <div

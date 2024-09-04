@@ -113,7 +113,7 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
             max="5"
             placeholder="Rating"
             onChange={handleChange}
-            value={formData.rating}
+            value={formData.rating ?? 0}
             className="block w-full mb-2 p-2 border-gray-500 border-2 rounded-md"
             required
           />

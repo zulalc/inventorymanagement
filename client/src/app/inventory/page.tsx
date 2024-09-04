@@ -3,7 +3,7 @@
 import { useGetProductsQuery } from "@/state/api";
 import Header from "../(components)/Header";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { AlertCircle } from "react-feather";
+import { AlertCircle, Edit, Trash } from "react-feather";
 import { Rating } from "@mui/material";
 
 const columns: GridColDef[] = [
@@ -39,7 +39,7 @@ const columns: GridColDef[] = [
         {params.row.stockQuantity}
         {params.row.stockQuantity < 300000 && (
           <div className="relative group">
-            <AlertCircle className="text-red-500 w-4 h-4 ml-2" />
+            <AlertCircle className="text-red-500 w-5 h-5 ml-2" />
             <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 hidden group-hover:block text-xs bg-red-500 text-white py-1 px-2 rounded">
               Inventory is low
             </div>
@@ -48,6 +48,21 @@ const columns: GridColDef[] = [
       </div>
     ),
   },
+  /* {
+    field: "actions",
+    headerName: "Actions",
+    width: 200,
+    renderCell: (params) => (
+      <div className="flex space-x-2">
+        <button className="flex items-center bg-blue-400 hover:bg-blue-600 text-white font-bold py-2 px-2 rounded">
+          <Edit className="w-5 h-5 mr-2" />
+        </button>
+        <button className="flex items-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded">
+          <Trash className="w-5 h-5 mr-2" />
+        </button>
+      </div>
+    ),
+  },*/
 ];
 
 const Inventory = () => {
@@ -74,17 +89,6 @@ const Inventory = () => {
               getRowId={(row) => row.productId}
               checkboxSelection
               className="bg-white shadow rounded-lg border border-gray-00 mt-5 !text-gray-700"
-              sx={{
-                "& .Mui-checked": {
-                  color: "#8b5cf6 !important",
-                },
-                "& .MuiCheckbox-indeterminate .MuiSvgIcon-root": {
-                  color: "#8b5cf6",
-                },
-                "& .MuiDataGrid-cell:hover": {
-                  color: "#8b5cf6",
-                },
-              }}
             />
           </div>
         </>

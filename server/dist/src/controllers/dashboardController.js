@@ -21,6 +21,9 @@ const getDashboardData = (req, res) => __awaiter(void 0, void 0, void 0, functio
                 stockQuantity: "desc", //descending
             },
         });
+        const users = yield prisma.users.findMany({
+            take: 20,
+        });
         const salesSummary = yield prisma.salesSummary.findMany({
             take: 5,
             orderBy: {
@@ -52,6 +55,7 @@ const getDashboardData = (req, res) => __awaiter(void 0, void 0, void 0, functio
             purchaseSummary,
             expenseSummary,
             expenseByCategorySummary,
+            users,
         });
     }
     catch (error) {
