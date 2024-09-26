@@ -1,18 +1,25 @@
-import React, { useState } from "react";
+import { useGetSuppliersQuery } from "@/state/api";
+import React, { useEffect, useState } from "react";
 
 type UpdateProductData = {
   id: string;
   name: string;
   price: number;
+  supplierId: string;
   stockQuantity: number;
-  rating?: number; // Make rating optional to handle undefined values
+  rating?: number;
+};
+
+type Supplier = {
+  supplierId: string;
+  name: string;
 };
 
 type UpdateProductProps = {
   isOpen: boolean;
   onClose: () => void;
   onUpdate: (formData: UpdateProductData) => void;
-  product: UpdateProductData; // Pass the product data to be edited
+  product: UpdateProductData;
 };
 
 const UpdateProduct = ({
@@ -21,15 +28,26 @@ const UpdateProduct = ({
   onUpdate,
   product,
 }: UpdateProductProps) => {
-  const [formData, setFormData] = useState(product);
+  const [formData, setFormData] = useState<UpdateProductData>(product);
+  const { data: suppliers, isLoading: isSuppliersLoading } =
+    useGetSuppliersQuery();
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  useEffect(() => {
+    console.log("Received product:", product);
+    setFormData(product);
+  }, [product]);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({ ...formData, [name]: value });
+    console.log("Updated formData:", { ...formData, [name]: value });
   };
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    console.log("Submitting data!!!!:", formData);
     onUpdate(formData);
     onClose();
   };
@@ -51,6 +69,27 @@ const UpdateProduct = ({
               className="border rounded w-full py-2 px-3"
             />
           </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700">Supplier</label>
+            <select
+              name="supplierId"
+              value={formData.supplierId}
+              onChange={handleChange}
+              className="border rounded w-full py-2 px-3"
+            >
+              {isSuppliersLoading ? (
+                <option>Loading suppliers...</option>
+              ) : (
+                suppliers?.map((supplier: Supplier) => (
+                  <option key={supplier.supplierId} value={supplier.supplierId}>
+                    {supplier.name}
+                  </option>
+                ))
+              )}
+            </select>
+          </div>
+
           <div className="mb-4">
             <label className="block text-gray-700">Price</label>
             <input
@@ -81,7 +120,7 @@ const UpdateProduct = ({
               className="border rounded w-full py-2 px-3"
               min="0"
               max="5"
-              step="0.1"
+              step="0.001"
             />
           </div>
           <div className="flex justify-end">

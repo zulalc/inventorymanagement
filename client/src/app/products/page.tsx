@@ -1,12 +1,22 @@
 "use client";
 import React, { useState } from "react";
-import { AlertCircle, Edit, PlusCircle, Search, Trash } from "react-feather";
+import {
+  AlertCircle,
+  ChevronDown,
+  ChevronUp,
+  Edit,
+  PlusCircle,
+  Search,
+  Trash,
+  XCircle,
+} from "react-feather";
 import { Rating } from "@mui/material";
 import {
   useGetProductsQuery,
   useCreateProductMutation,
   useDeleteProductMutation,
   useUpdateProductMutation,
+  useGetSuppliersQuery,
 } from "@/state/api";
 import Header from "../(components)/Header";
 import CreateProduct from "@/app/products/CreateProduct";
@@ -16,6 +26,7 @@ import UpdateProduct from "@/app/products/UpdateProduct";
 type ProductFormData = {
   name: string;
   price: number;
+  supplierId: string;
   stockQuantity: number;
   rating?: number;
 };
@@ -24,6 +35,7 @@ type ProductEditData = {
   id: string;
   name: string;
   price: number;
+  supplierId: string;
   stockQuantity: number;
   rating?: number;
 };
@@ -39,6 +51,14 @@ const Products = () => {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<ProductEditData | null>(null);
+  const [filter, setFilter] = useState<"all" | "outOfStock" | "lowInventory">(
+    "all"
+  );
+
+  const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
+  const [isFilterOpen, setIsFilterOpen] = useState(false);
+
+  const { data: suppliers } = useGetSuppliersQuery();
 
   const {
     data: products,
@@ -59,6 +79,7 @@ const Products = () => {
     setEditProduct(product);
     setIsEditOpen(true);
   };
+
   const handleCreateProduct = async (productData: ProductFormData) => {
     await createProduct(productData);
   };
@@ -79,13 +100,17 @@ const Products = () => {
     productId: string,
     productData: ProductEditData
   ) => {
-    console.log("Updating Product with ID:", productId);
-    console.log("Data:", productData);
     try {
-      const { id, ...partialProductData } = productData;
       await updateProduct({
         productId,
-        productData: partialProductData,
+        productData: {
+          productId,
+          name: productData.name,
+          price: productData.price,
+          stockQuantity: productData.stockQuantity,
+          rating: productData.rating,
+          supplierId: productData.supplierId,
+        },
       }).unwrap();
       console.log("Product updated successfully");
     } catch (error: any) {
@@ -95,6 +120,30 @@ const Products = () => {
       );
     }
   };
+
+  const handleSupplierChange = (supplierId: string) => {
+    setSelectedSuppliers((prevSelected) =>
+      prevSelected.includes(supplierId)
+        ? prevSelected.filter((id) => id !== supplierId)
+        : [...prevSelected, supplierId]
+    );
+  };
+
+  const filteredProducts = products?.filter((product) => {
+    let matchesFilter = true;
+
+    if (filter === "outOfStock") matchesFilter = product.stockQuantity === 0;
+
+    if (filter === "lowInventory")
+      matchesFilter =
+        product.stockQuantity > 0 && product.stockQuantity < 30000;
+
+    if (selectedSuppliers.length > 0) {
+      matchesFilter =
+        matchesFilter && selectedSuppliers.includes(product.supplierId);
+    }
+    return matchesFilter;
+  });
 
   return (
     <div>
@@ -125,85 +174,185 @@ const Products = () => {
 
             <div className="flex justify-between items-center mb-6">
               <Header name="Products" />
+            </div>
+
+            <div className="flex justify-between mb-6">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold mb-2 flex items-center">
+                  Filter by Supplier
+                  <button
+                    className="ml-2"
+                    onClick={() => setIsFilterOpen((prev) => !prev)}
+                  >
+                    {isFilterOpen ? <ChevronUp /> : <ChevronDown />}
+                  </button>
+                </h3>
+                {isFilterOpen && (
+                  <div className="max-h-32 overflow-y-auto border border-gray-300 rounded p-2">
+                    {suppliers?.map((supplier) => (
+                      <label
+                        key={supplier.supplierId}
+                        className="flex items-center mr-4 mb-2"
+                      >
+                        <input
+                          type="checkbox"
+                          className="mr-2"
+                          checked={selectedSuppliers.includes(
+                            supplier.supplierId
+                          )}
+                          onChange={() =>
+                            handleSupplierChange(supplier.supplierId)
+                          }
+                        />
+                        {supplier.name}
+                      </label>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex items-center">
+                <button
+                  className="flex items-center bg-violet-500 hover:bg-violet-700 text-gray-200 font-bold py-2 px-4 rounded"
+                  onClick={() => setIsCreateOpen(true)}
+                >
+                  <PlusCircle className="w-5 h-5 mr-3 !text-gray-200" /> Create
+                  Product
+                </button>
+              </div>
+            </div>
+
+            <div className="mb-6 flex space-x-4">
               <button
-                className="flex items-center bg-violet-500 hover:bg-violet-700 text-gray-200 font-bold py-2 px-4 rounded"
-                onClick={() => setIsCreateOpen(true)}
+                className={`py-2 px-4 rounded ${
+                  filter === "all"
+                    ? "bg-violet-500 text-white"
+                    : "bg-gray-200 text-gray-600"
+                }`}
+                onClick={() => setFilter("all")}
               >
-                <PlusCircle className="w-5 h-5 mr-3 !text-gray-200" /> Create
-                Product
+                All
+              </button>
+              <button
+                className={`py-2 px-4 rounded ${
+                  filter === "lowInventory"
+                    ? "bg-violet-500 text-white"
+                    : "bg-gray-200 text-gray-600"
+                }`}
+                onClick={() => setFilter("lowInventory")}
+              >
+                Low Inventory
+              </button>
+              <button
+                className={`py-2 px-4 rounded ${
+                  filter === "outOfStock"
+                    ? "bg-violet-500 text-white"
+                    : "bg-gray-200 text-gray-600"
+                }`}
+                onClick={() => setFilter("outOfStock")}
+              >
+                Out of Stock
               </button>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg-grid-cols-3 gap-10 justify-between">
-              {products?.map((product) => (
-                <div
-                  className="border shadow rounded-md p-4 max-w-full w-full mx-auto"
-                  key={product.productId}
-                >
-                  <div className="flex flex-col items-center">
-                    img
-                    <h3 className="text-lg text-gray-900 font-semibold">
-                      {product.name}{" "}
-                    </h3>
-                    <p className="text-gray-800">${product.price.toFixed(2)}</p>
-                    <div className="text-sm text-gray-600 mt-1">
-                      {product.stockQuantity >= 90000 ? (
-                        <div>Stock: {product.stockQuantity}</div>
-                      ) : (
-                        <div>
-                          <div className="text-red-500 font-bold ml-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-between">
+              {filteredProducts?.map((product) => {
+                const supplier = suppliers?.find(
+                  (s) => s.supplierId === product.supplierId
+                );
+
+                return (
+                  <div
+                    className="border shadow rounded-md p-4 max-w-full w-full mx-auto"
+                    key={product.productId}
+                  >
+                    <div className="flex flex-col items-center">
+                      {/* Image placeholder */}
+                      <h3 className="text-lg text-gray-900 font-semibold">
+                        {product.name}
+                      </h3>
+                      <h2 className="text-m text-gray-600 font-semibold">
+                        {supplier
+                          ? supplier.name
+                          : `Supplier not found (ID: ${product.supplierId})`}
+                      </h2>
+                      <p className="text-gray-800">
+                        ${product.price.toFixed(2)}
+                      </p>
+                      <div className="text-sm text-gray-600 mt-1">
+                        {product.stockQuantity === 0 ? (
+                          <div className="text-red-600 font-bold ml-8">
+                            <div className="flex items-center justify-center">
+                              <XCircle className="w-6 h-6" stroke="red" />
+                              <span className="text-s py-1 px-2 rounded font-bold">
+                                Out of Stock!
+                              </span>
+                            </div>
+                          </div>
+                        ) : product.stockQuantity >= 90000 ? (
+                          <div className="text-green-500 font-bold ml-8">
                             Stock: {product.stockQuantity}
                           </div>
-                          <div className="flex items-center">
-                            <AlertCircle
-                              className="w-6 h-6 mr-2"
-                              stroke="red"
-                            />
-                            <span className=" text-xs text-red-500 py-1 px-2 rounded font-bold">
-                              Inventory is low.
-                            </span>
+                        ) : (
+                          <div>
+                            <div className="text-orange-400 font-bold ml-8">
+                              Stock: {product.stockQuantity}
+                            </div>
+                            <div className="flex items-center">
+                              <AlertCircle
+                                className="w-6 h-6 mr-2"
+                                stroke="#FFA500"
+                              />
+                              <span className="text-s text-orange-400 py-1 px-2 rounded font-bold">
+                                Low inventory!
+                              </span>
+                            </div>
                           </div>
+                        )}
+                      </div>
+                      {product.rating !== undefined && (
+                        <div className="flex items-center mt-2 mb-4">
+                          <Rating
+                            name={`rating-${product.productId}`}
+                            value={product.rating || 0}
+                            readOnly
+                          />
+                          <span className="ml-2 text-gray-700">
+                            {product.rating || "No rating"}
+                          </span>
                         </div>
                       )}
-                    </div>
-                    {product.rating !== undefined && (
-                      <div className="flex items-center mt-2 mb-4">
-                        <Rating
-                          name={`rating-${product.productId}`}
-                          value={product.rating || 0}
-                          readOnly
-                        />
+                      <div className="flex space-x-2">
+                        <button
+                          className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
+                          onClick={() =>
+                            openEditModal({
+                              id: product.productId,
+                              name: product.name,
+                              price: product.price,
+                              supplierId: product.supplierId,
+                              stockQuantity: product.stockQuantity,
+                              rating: product.rating,
+                            })
+                          }
+                        >
+                          <Edit className="w-5 h-5 mr-2" /> Update Product
+                        </button>
+                        <button
+                          className="flex items-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
+                          onClick={() =>
+                            openDeleteModal(product.productId, product.name)
+                          }
+                        >
+                          <Trash className="w-5 h-5 mr-2" /> Delete
+                        </button>
                       </div>
-                    )}
-                    <div className="flex space-x-2">
-                      <button
-                        className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
-                        onClick={() =>
-                          openEditModal({
-                            id: product.productId,
-                            name: product.name,
-                            price: product.price,
-                            stockQuantity: product.stockQuantity,
-                            rating: product.rating,
-                          })
-                        }
-                      >
-                        <Edit className="w-5 h-5 mr-2" /> Update Product
-                      </button>
-                      <button
-                        className="flex items-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
-                        onClick={() =>
-                          openDeleteModal(product.productId, product.name)
-                        }
-                      >
-                        <Trash className="w-5 h-5 mr-2" />
-                        Delete
-                      </button>
                     </div>
                   </div>
-                </div>
-              ))}
+                );
+              })}
             </div>
+
             <CreateProduct
               isOpen={isCreateOpen}
               onClose={() => setIsCreateOpen(false)}

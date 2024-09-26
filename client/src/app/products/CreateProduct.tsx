@@ -1,12 +1,19 @@
 import { ChangeEvent, FormEvent, useState } from "react";
 import { v4 } from "uuid";
 import Header from "../(components)/Header";
+import { useGetSuppliersQuery } from "@/state/api";
 
 type ProductFormData = {
   name: string;
   price: number;
   stockQuantity: number;
+  supplierId: string;
   rating: number;
+};
+
+type Supplier = {
+  supplierId: string;
+  name: string;
 };
 
 type CreateProductProps = {
@@ -21,10 +28,16 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
     name: "",
     price: 0,
     stockQuantity: 0,
+    supplierId: "",
     rating: 0,
   });
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const { data: suppliers, isLoading: isSuppliersLoading } =
+    useGetSuppliersQuery(); // Fetch suppliers
+
+  const handleChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
     const { name, value } = e.target;
     setFormData({
       ...formData,
@@ -65,6 +78,30 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
             className="block w-full mb-2 p-2 border-gray-500 border-2 rounded-md"
             required
           />
+
+          <label
+            htmlFor="supplier"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Supplier
+          </label>
+          <select
+            name="supplierId"
+            value={formData.supplierId}
+            onChange={handleChange}
+            className="block w-full mb-2 p-2 border-gray-500 border-2 rounded-md"
+            required
+          >
+            {isSuppliersLoading ? (
+              <option>Loading suppliers...</option>
+            ) : (
+              suppliers?.map((supplier: Supplier) => (
+                <option key={supplier.supplierId} value={supplier.supplierId}>
+                  {supplier.name}
+                </option>
+              ))
+            )}
+          </select>
 
           <label
             htmlFor="productPrice"
@@ -111,6 +148,7 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
             name="rating"
             min="0"
             max="5"
+            step="0.001"
             placeholder="Rating"
             onChange={handleChange}
             value={formData.rating ?? 0}
