@@ -1,4 +1,15 @@
 -- CreateTable
+CREATE TABLE "Admins" (
+    "adminId" SERIAL NOT NULL,
+    "username" TEXT NOT NULL,
+    "password" TEXT NOT NULL,
+    "email" TEXT NOT NULL,
+    "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
+
+    CONSTRAINT "Admins_pkey" PRIMARY KEY ("adminId")
+);
+
+-- CreateTable
 CREATE TABLE "Users" (
     "userId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
@@ -8,8 +19,18 @@ CREATE TABLE "Users" (
 );
 
 -- CreateTable
+CREATE TABLE "Suppliers" (
+    "supplierId" TEXT NOT NULL,
+    "name" TEXT NOT NULL,
+    "contactInfo" TEXT NOT NULL,
+
+    CONSTRAINT "Suppliers_pkey" PRIMARY KEY ("supplierId")
+);
+
+-- CreateTable
 CREATE TABLE "Products" (
     "productId" TEXT NOT NULL,
+    "supplierId" TEXT NOT NULL,
     "name" TEXT NOT NULL,
     "price" DOUBLE PRECISION NOT NULL,
     "rating" DOUBLE PRECISION,
@@ -91,6 +112,15 @@ CREATE TABLE "ExpenseByCategory" (
 
     CONSTRAINT "ExpenseByCategory_pkey" PRIMARY KEY ("expenseByCategoryId")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admins_username_key" ON "Admins"("username");
+
+-- CreateIndex
+CREATE UNIQUE INDEX "Admins_email_key" ON "Admins"("email");
+
+-- AddForeignKey
+ALTER TABLE "Products" ADD CONSTRAINT "Products_supplierId_fkey" FOREIGN KEY ("supplierId") REFERENCES "Suppliers"("supplierId") ON DELETE RESTRICT ON UPDATE CASCADE;
 
 -- AddForeignKey
 ALTER TABLE "Sales" ADD CONSTRAINT "Sales_productId_fkey" FOREIGN KEY ("productId") REFERENCES "Products"("productId") ON DELETE RESTRICT ON UPDATE CASCADE;

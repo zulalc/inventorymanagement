@@ -18,10 +18,20 @@ const path_1 = __importDefault(require("path"));
 const prisma = new client_1.PrismaClient();
 function deleteAllData(orderedFileNames) {
     return __awaiter(this, void 0, void 0, function* () {
-        const modelNames = orderedFileNames.map((fileName) => {
-            const modelName = path_1.default.basename(fileName, path_1.default.extname(fileName));
-            return modelName.charAt(0).toUpperCase() + modelName.slice(1);
-        });
+        // Order of models for deletion
+        const modelNames = [
+            "expenseByCategory",
+            "expenseSummary",
+            "expenses",
+            "sales",
+            "purchases",
+            "salesSummary",
+            "purchaseSummary",
+            "products",
+            "suppliers",
+            "users",
+            "admins",
+        ];
         for (const modelName of modelNames) {
             const model = prisma[modelName];
             if (model) {
@@ -38,15 +48,17 @@ function main() {
     return __awaiter(this, void 0, void 0, function* () {
         const dataDirectory = path_1.default.join(__dirname, "seedData");
         const orderedFileNames = [
+            "admins.json",
+            "users.json",
+            "suppliers.json",
             "products.json",
-            "purchases.json",
             "sales.json",
+            "purchases.json",
             "expenses.json",
             "expenseSummary.json",
             "expenseByCategory.json",
             "salesSummary.json",
             "purchaseSummary.json",
-            "users.json",
         ];
         yield deleteAllData(orderedFileNames);
         for (const fileName of orderedFileNames) {

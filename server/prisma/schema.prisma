@@ -27,12 +27,21 @@ model Users {
   email  String
 }
 
+model Suppliers {
+  supplierId  String     @id
+  name        String
+  contactInfo String
+  Products    Products[]
+}
+
 model Products {
   productId     String      @id
+  supplierId    String
   name          String
   price         Float
   rating        Float?
   stockQuantity Int
+  supplier      Suppliers   @relation(fields: [supplierId], references: [supplierId])
   Sales         Sales[]
   Purchases     Purchases[]
 }
