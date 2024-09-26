@@ -9,10 +9,42 @@ export const getDashboardData = async (
   res: Response
 ): Promise<void> => {
   try {
-    const popularProducts = await prisma.products.findMany({
+    const popularProducts = await prisma.sales.groupBy({
+      by: ["productId"],
+      _sum: {
+        quantity: true, // Sum the quantity sold for each product
+      },
+      orderBy: {
+        _sum: {
+          quantity: "desc",
+        },
+      },
+      take: 10,
+    });
+
+    const productDetails = await Promise.all(
+      popularProducts.map(async (sale) => {
+        const product = await prisma.products.findUnique({
+          where: {
+            productId: sale.productId,
+          },
+        });
+        return {
+          ...product,
+          totalQuantitySold: sale._sum.quantity,
+        };
+      })
+    );
+
+    const lowStockProducts = await prisma.products.findMany({
+      where: {
+        stockQuantity: {
+          lt: 10000, // less than
+        },
+      },
       take: 15,
       orderBy: {
-        stockQuantity: "desc", //descending
+        stockQuantity: "asc", // ascending
       },
     });
 
@@ -59,6 +91,8 @@ export const getDashboardData = async (
 
     res.json({
       popularProducts,
+      productDetails,
+      lowStockProducts,
       salesSummary,
       purchaseSummary,
       expenseSummary,

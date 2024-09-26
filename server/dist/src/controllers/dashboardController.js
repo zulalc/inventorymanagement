@@ -15,10 +15,35 @@ const prisma = new client_1.PrismaClient(); //an auto-generated query builder
 //that enables type - safe database access and reduces boilerplate
 const getDashboardData = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const popularProducts = yield prisma.products.findMany({
+        const popularProducts = yield prisma.sales.groupBy({
+            by: ["productId"],
+            _sum: {
+                quantity: true, // Sum the quantity sold for each product
+            },
+            orderBy: {
+                _sum: {
+                    quantity: "desc",
+                },
+            },
+            take: 10,
+        });
+        const productDetails = yield Promise.all(popularProducts.map((sale) => __awaiter(void 0, void 0, void 0, function* () {
+            const product = yield prisma.products.findUnique({
+                where: {
+                    productId: sale.productId,
+                },
+            });
+            return Object.assign(Object.assign({}, product), { totalQuantitySold: sale._sum.quantity });
+        })));
+        const lowStockProducts = yield prisma.products.findMany({
+            where: {
+                stockQuantity: {
+                    lt: 10000, // less than
+                },
+            },
             take: 15,
             orderBy: {
-                stockQuantity: "desc", //descending
+                stockQuantity: "asc", // ascending
             },
         });
         const users = yield prisma.users.findMany({
@@ -51,6 +76,8 @@ const getDashboardData = (req, res) => __awaiter(void 0, void 0, void 0, functio
         const expenseByCategorySummary = expenseByCategorySummaryRaw.map((item) => (Object.assign(Object.assign({}, item), { amount: item.amount.toString() })));
         res.json({
             popularProducts,
+            productDetails,
+            lowStockProducts,
             salesSummary,
             purchaseSummary,
             expenseSummary,

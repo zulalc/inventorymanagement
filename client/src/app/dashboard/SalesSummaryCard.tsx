@@ -97,13 +97,15 @@ const SalesSummaryCard = () => {
       <h3 className="text-lg font-semibold mb-2 px-7 pt-5">Sales Summary</h3>
       <hr />
       {isLoading ? (
-        <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-violet-500 motion-reduce:animate-[spin_1.5s_linear_infinite]"
-          role="status"
-        >
-          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-            Loading...
-          </span>
+        <div className="flex items-center justify-center h-full w-full">
+          <div
+            className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-violet-500 motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            role="status"
+          >
+            <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
+              Loading...
+            </span>
+          </div>
         </div>
       ) : (
         <>
@@ -138,7 +140,7 @@ const SalesSummaryCard = () => {
               value={time}
               onChange={(e) =>
                 setTime(e.target.value as "daily" | "weekly" | "monthly")
-              } // Ensure value is typed correctly
+              }
             >
               <option value="daily">Daily</option>
               <option value="weekly">Weekly</option>
