@@ -5,11 +5,13 @@ import Link from "next/link";
 import React from "react";
 import {
   Archive,
+  BarChart2,
   Clipboard,
   DollarSign,
   Layout,
   Menu,
   Sliders,
+  Truck,
   User,
 } from "react-feather";
 import { usePathname } from "next/navigation";
@@ -73,6 +75,25 @@ const Sidebar = () => {
           </div>
         </Link>
 
+        <Link href="/analytics">
+          <div
+            className={`cursor-pointer flex items-center ${
+              isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
+            } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
+              usePathname() === "/analytics" ? "bg-violet-200 text-white" : ""
+            }`}
+          >
+            <BarChart2 className="w-6 h-6 !text-gray-700" />
+            <span
+              className={`${
+                isSidebarOpen ? "hidden" : "block"
+              } font-medium text-gray-700`}
+            >
+              Reports/Analytics
+            </span>
+          </div>
+        </Link>
+
         <Link href="/inventory">
           <div
             className={`cursor-pointer flex items-center ${
@@ -107,6 +128,25 @@ const Sidebar = () => {
               } font-medium text-gray-700`}
             >
               Products
+            </span>
+          </div>
+        </Link>
+
+        <Link href="/suppliers">
+          <div
+            className={`cursor-pointer flex items-center ${
+              isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
+            } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
+              usePathname() === "/suppliers" ? "bg-violet-200 text-white" : ""
+            }`}
+          >
+            <Truck className="w-6 h-6 !text-gray-700" />
+            <span
+              className={`${
+                isSidebarOpen ? "hidden" : "block"
+              } font-medium text-gray-700`}
+            >
+              Suppliers
             </span>
           </div>
         </Link>

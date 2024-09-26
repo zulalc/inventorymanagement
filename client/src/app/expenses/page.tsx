@@ -15,7 +15,7 @@ const COLORS = ["#6c5b9e", "#f5a6b1", "#4db6ac"];
 type ExpenseGroup = {
   category: string;
   amount: number;
-  date: string; // Adjust if needed
+  date: string;
 };
 
 const Expenses = () => {
@@ -43,11 +43,10 @@ const Expenses = () => {
       day: "numeric",
     });
 
-  // Ensure that each item has a unique `id`
   const rows = filteredData.map((expense) => ({
-    id: `${expense.expenseSummaryId}-${expense.date}`, // Use expenseByCategorySummaryId as the ID
+    id: `${expense.expenseSummaryId}-${expense.date}`,
     category: expense.category,
-    amount: parseFloat(expense.amount), // Convert amount to number if needed
+    amount: parseFloat(expense.amount),
     date: formatDate(expense.date),
   }));
 
@@ -72,7 +71,7 @@ const Expenses = () => {
     : [];
 
   const columns: GridColDef[] = [
-    { field: "id", headerName: "ID", width: 90 }, // Use `id` field in columns
+    { field: "id", headerName: "ID", width: 90 },
     { field: "category", headerName: "Category", width: 150 },
     { field: "amount", headerName: "Amount", width: 150 },
     { field: "date", headerName: "Date", width: 150 },

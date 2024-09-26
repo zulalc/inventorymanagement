@@ -1,83 +1,101 @@
 "use client";
-
-import { useGetProductsQuery } from "@/state/api";
+import { useGetProductsQuery, useGetSuppliersQuery } from "@/state/api";
 import Header from "../(components)/Header";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
-import { AlertCircle, Edit, Trash } from "react-feather";
+import { AlertCircle, XCircle } from "react-feather";
 import { Rating } from "@mui/material";
 
-const columns: GridColDef[] = [
-  { field: "productId", headerName: "ID", width: 90 },
-  { field: "name", headerName: "Product Name", width: 200 },
-  {
-    field: "price",
-    headerName: "Price",
-    width: 110,
-    type: "number",
-    valueGetter: (value, row) => `$${row.price}`,
-  },
-  {
-    field: "rating",
-    headerName: "Rating",
-    width: 170,
-    type: "number",
-    valueGetter: (value, row) => (row.rating ? row.rating : "N/A"),
-    renderCell: (params) => (
-      <div className="flex items-center">
-        <Rating defaultValue={params.row.rating || 0} readOnly />
-        {params.row.rating}
-      </div>
-    ),
-  },
-  {
-    field: "stockQuantity",
-    headerName: "Stock Quantity",
-    width: 170,
-    type: "number",
-    renderCell: (params) => (
-      <div className="flex items-center">
-        {params.row.stockQuantity}
-        {params.row.stockQuantity < 300000 && (
-          <div className="relative group">
-            <AlertCircle className="text-red-500 w-5 h-5 ml-2" />
-            <div className="absolute left-full top-1/2 transform -translate-y-1/2 ml-2 hidden group-hover:block text-xs bg-red-500 text-white py-1 px-2 rounded">
-              Inventory is low
-            </div>
-          </div>
-        )}
-      </div>
-    ),
-  },
-  /* {
-    field: "actions",
-    headerName: "Actions",
-    width: 200,
-    renderCell: (params) => (
-      <div className="flex space-x-2">
-        <button className="flex items-center bg-blue-400 hover:bg-blue-600 text-white font-bold py-2 px-2 rounded">
-          <Edit className="w-5 h-5 mr-2" />
-        </button>
-        <button className="flex items-center bg-red-500 hover:bg-red-700 text-white font-bold py-2 px-2 rounded">
-          <Trash className="w-5 h-5 mr-2" />
-        </button>
-      </div>
-    ),
-  },*/
-];
-
 const Inventory = () => {
-  const { data: products, isLoading, isError } = useGetProductsQuery();
+  const {
+    data: products,
+    isLoading: productsLoading,
+    isError: productsError,
+  } = useGetProductsQuery();
+
+  const {
+    data: suppliers,
+    isLoading: suppliersLoading,
+    isError: suppliersError,
+  } = useGetSuppliersQuery();
+
+  const supplierMap = suppliers?.reduce((map, supplier) => {
+    map[supplier.supplierId] = supplier.name;
+    return map;
+  }, {} as Record<string, string>);
+
+  const columns: GridColDef[] = [
+    { field: "productId", headerName: "ID", width: 90 },
+    { field: "name", headerName: "Product Name", width: 200 },
+
+    {
+      field: "supplierId",
+      headerName: "Supplier",
+      width: 200,
+      valueGetter: (value, row) => supplierMap?.[row.supplierId] || "Unknown",
+    },
+    {
+      field: "price",
+      headerName: "Price",
+      width: 110,
+      type: "number",
+      valueGetter: (value, row) => `$${row.price}`,
+    },
+    {
+      field: "rating",
+      headerName: "Rating",
+      width: 170,
+      type: "number",
+      valueGetter: (value, row) => (row.rating ? row.rating : "N/A"),
+      renderCell: (params) => (
+        <div className="flex items-center">
+          <Rating defaultValue={params.row.rating || 0} readOnly />
+          {params.row.rating}
+        </div>
+      ),
+    },
+    {
+      field: "stockQuantity",
+      headerName: "Stock Quantity",
+      width: 170,
+      type: "number",
+      renderCell: (params) => (
+        <div className="flex items-center text-sm text-gray-600 mt-1">
+          {params.row.stockQuantity === 0 ? (
+            <div>
+              <div className="flex items-center justify-center">
+                <XCircle className="w-6 h-6" stroke="red" />
+                <div className="text-red-600 font-bold ml-2">Out of Stock</div>
+              </div>
+            </div>
+          ) : params.row.stockQuantity >= 90000 ? (
+            <div className="text-green-500 font-bold ml-8">
+              {params.row.stockQuantity}
+            </div>
+          ) : (
+            <div>
+              <div className="flex items-center justify-center">
+                <AlertCircle className="w-6 h-6" stroke="#FFA500" />
+                <div className="text-orange-400 font-bold ml-2">
+                  {params.row.stockQuantity}
+                </div>
+              </div>
+            </div>
+          )}
+        </div>
+      ),
+    },
+  ];
+
   return (
     <div>
       <hr />
-      {isLoading ? (
-        <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-violet-500 motion-reduce:animate-[spin_1.5s_linear_infinite]"
-          role="status"
-        >
-          <span className="!absolute !-m-px !h-px !w-px !overflow-hidden !whitespace-nowrap !border-0 !p-0 ![clip:rect(0,0,0,0)]">
-            Loading...
-          </span>
+      {productsLoading || suppliersLoading ? (
+        <div className="flex items-center justify-center h-full w-full">
+          <div
+            className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-violet-500 motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            role="status"
+          ></div>
+          <span className="ml-2 text-violet-500">Loading...</span>
         </div>
       ) : (
         <>
@@ -94,7 +112,9 @@ const Inventory = () => {
         </>
       )}
 
-      {isError && <div className="m-5">Failed to fetch data</div>}
+      {productsError || suppliersError ? (
+        <div className="m-5">Failed to fetch data</div>
+      ) : null}
     </div>
   );
 };
