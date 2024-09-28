@@ -1,0 +1,62 @@
+[
+  {
+    "supplierId": "d8f61c59-e153-4a61-9b8b-9f8199f0d8a8",
+    "name": "GlowCosmetics Inc.",
+    "contactInfo": "info@glowcosmetics.com"
+  },
+  {
+    "supplierId": "ae2f00c6-1e2c-4990-8b28-f7b7c8f3eaf0",
+    "name": "Velvet Beauty",
+    "contactInfo": "orders@velvetbeauty.com"
+  },
+  {
+    "supplierId": "9a37bdb9-9a82-4e3a-947b-7b162cdb0c89",
+    "name": "NourishMe Ltd.",
+    "contactInfo": "nourish@me.com"
+  },
+  {
+    "supplierId": "5c61ac68-7d48-4818-8af7-d6a4a92f368b",
+    "name": "RadiantCare Solutions",
+    "contactInfo": "support@radiantcare.com"
+  },
+  {
+    "supplierId": "7d9e0658-7af5-4a8f-8b3f-2a316e9afba9",
+    "name": "Anti-Age Experts",
+    "contactInfo": "info@antiageexperts.com"
+  },
+  {
+    "supplierId": "8a482f96-8124-41f6-8c34-fcf653d3b8b2",
+    "name": "SkinHealth Corp.",
+    "contactInfo": "sales@skinhealth.com"
+  },
+  {
+    "supplierId": "a92f865b-44d7-4015-8b3f-d2fd81748294",
+    "name": "HairCare Masters",
+    "contactInfo": "contact@haircaremasters.com"
+  },
+  {
+    "supplierId": "d2c61aa7-84cb-4bbd-b45e-d79a92682f7e",
+    "name": "BeautyBasics Inc.",
+    "contactInfo": "support@beautybasics.com"
+  },
+  {
+    "supplierId": "b8e2e3fa-bad9-44c1-8334-cda6e9e2a9c9",
+    "name": "RadianceWorld",
+    "contactInfo": "orders@radianceworld.com"
+  },
+  {
+    "supplierId": "a8d65e2e-012c-45e3-b6c3-80c84718b5b1",
+    "name": "PerfumeHouse Ltd.",
+    "contactInfo": "contact@perfumehouse.com"
+  },
+  {
+    "supplierId": "fba2a0b6-e94f-4110-88cc-5106627637a9",
+    "name": "FragranceWorld",
+    "contactInfo": "sales@fragranceworld.com"
+  },
+  {
+    "supplierId": "a9c2f3b6-e6c4-4cba-9d33-cb81487067e9",
+    "name": "MangoPerfumes Inc.",
+    "contactInfo": "info@mangoperfumes.com"
+  }
+]
