@@ -22,32 +22,38 @@ model Admins {
 }
 
 model Users {
-  userId String @id
-  name   String
-  email  String
+  userId    String   @id @default(uuid())
+  name      String
+  email     String
+  status    String   @default("active")
+  createdAt DateTime @default(now())
 }
 
 model Suppliers {
-  supplierId  String     @id
+  supplierId  String     @id @default(uuid())
   name        String
   contactInfo String
+  status      String     @default("active")
+  createdAt   DateTime   @default(now())
   Products    Products[]
 }
 
 model Products {
-  productId     String      @id
+  productId     String      @id @default(uuid())
   supplierId    String
   name          String
   price         Float
   rating        Float?
   stockQuantity Int
+  status        String      @default("active")
+  createdAt     DateTime    @default(now())
   supplier      Suppliers   @relation(fields: [supplierId], references: [supplierId])
   Sales         Sales[]
   Purchases     Purchases[]
 }
 
 model Sales {
-  saleId      String   @id
+  saleId      String   @id @default(uuid())
   productId   String
   timestamp   DateTime
   quantity    Int
@@ -57,7 +63,7 @@ model Sales {
 }
 
 model Purchases {
-  purchaseId String   @id
+  purchaseId String   @id @default(uuid())
   productId  String
   timestamp  DateTime
   quantity   Int
@@ -67,35 +73,35 @@ model Purchases {
 }
 
 model Expenses {
-  expenseId String   @id
+  expenseId String   @id @default(uuid())
   category  String
   amount    Float
   timestamp DateTime
 }
 
 model SalesSummary {
-  salesSummaryId   String   @id
+  salesSummaryId   String   @id @default(uuid())
   totalValue       Float
   changePercentage Float?
   date             DateTime
 }
 
 model PurchaseSummary {
-  purchaseSummaryId String   @id
+  purchaseSummaryId String   @id @default(uuid())
   totalPurchased    Float
   changePercentage  Float?
   date              DateTime
 }
 
 model ExpenseSummary {
-  expenseSummaryId  String              @id
+  expenseSummaryId  String              @id @default(uuid())
   totalExpenses     Float
   date              DateTime
   ExpenseByCategory ExpenseByCategory[]
 }
 
 model ExpenseByCategory {
-  expenseByCategoryId String         @id
+  expenseByCategoryId String         @id @default(uuid())
   expenseSummaryId    String
   category            String
   amount              BigInt

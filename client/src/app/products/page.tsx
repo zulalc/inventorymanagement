@@ -29,6 +29,7 @@ type ProductFormData = {
   supplierId: string;
   stockQuantity: number;
   rating?: number;
+  status: "active" | "inactive";
 };
 
 type ProductEditData = {
@@ -38,6 +39,7 @@ type ProductEditData = {
   supplierId: string;
   stockQuantity: number;
   rating?: number;
+  status: string;
 };
 
 const Products = () => {
@@ -51,9 +53,9 @@ const Products = () => {
 
   const [isEditOpen, setIsEditOpen] = useState(false);
   const [editProduct, setEditProduct] = useState<ProductEditData | null>(null);
-  const [filter, setFilter] = useState<"all" | "outOfStock" | "lowInventory">(
-    "all"
-  );
+  const [filter, setFilter] = useState<
+    "all" | "outOfStock" | "lowInventory" | "inactive"
+  >("all");
 
   const [selectedSuppliers, setSelectedSuppliers] = useState<string[]>([]);
   const [isFilterOpen, setIsFilterOpen] = useState(false);
@@ -110,6 +112,7 @@ const Products = () => {
           stockQuantity: productData.stockQuantity,
           rating: productData.rating,
           supplierId: productData.supplierId,
+          status: productData.status,
         },
       }).unwrap();
       console.log("Product updated successfully");
@@ -137,6 +140,8 @@ const Products = () => {
     if (filter === "lowInventory")
       matchesFilter =
         product.stockQuantity > 0 && product.stockQuantity < 30000;
+
+    if (filter === "inactive") matchesFilter = product.status === "inactive";
 
     if (selectedSuppliers.length > 0) {
       matchesFilter =
@@ -253,6 +258,17 @@ const Products = () => {
               >
                 Out of Stock
               </button>
+
+              <button
+                className={`py-2 px-4 rounded ${
+                  filter === "inactive"
+                    ? "bg-violet-500 text-white"
+                    : "bg-gray-300 text-gray-700"
+                }`}
+                onClick={() => setFilter("inactive")}
+              >
+                Inactive
+              </button>
             </div>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10 justify-between">
@@ -271,11 +287,23 @@ const Products = () => {
                       <h3 className="text-lg text-gray-900 font-semibold">
                         {product.name}
                       </h3>
+
                       <h2 className="text-m text-gray-600 font-semibold">
                         {supplier
                           ? supplier.name
                           : `Supplier not found (ID: ${product.supplierId})`}
                       </h2>
+                      <p
+                        className={`text-gray-800 font-bold ${
+                          product.status === "active"
+                            ? "text-green-600"
+                            : "text-red-600"
+                        }`}
+                      >
+                        Status:{" "}
+                        {product.status === "active" ? "Active" : "Inactive"}
+                      </p>
+
                       <p className="text-gray-800">
                         ${product.price.toFixed(2)}
                       </p>
@@ -322,6 +350,7 @@ const Products = () => {
                           </span>
                         </div>
                       )}
+
                       <div className="flex space-x-2">
                         <button
                           className="flex items-center bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
@@ -332,12 +361,14 @@ const Products = () => {
                               price: product.price,
                               supplierId: product.supplierId,
                               stockQuantity: product.stockQuantity,
+                              status: product.status,
                               rating: product.rating,
                             })
                           }
                         >
-                          <Edit className="w-5 h-5 mr-2" /> Update Product
+                          <Edit className="w-5 h-5 mr-2" /> Update
                         </button>
+
                         <button
                           className="flex items-center bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
                           onClick={() =>

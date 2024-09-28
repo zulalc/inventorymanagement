@@ -17,6 +17,9 @@ export const getProducts = async (
           mode: "insensitive",
         },
       },
+      include: {
+        supplier: true,
+      },
     });
     res.json(products);
   } catch (error) {
@@ -29,19 +32,42 @@ export const createProduct = async (
   res: Response
 ): Promise<void> => {
   try {
-    const { productId, name, price, rating, stockQuantity } = req.body;
+    const { name, price, rating, stockQuantity, supplierId, status } = req.body;
+    console.log(req.body);
+    if (!name || !price || !stockQuantity || !supplierId || !status) {
+      res.status(400).json({ message: "All fields are required." });
+      return;
+    }
+
+    const supplierExists = await prisma.suppliers.findUnique({
+      where: { supplierId },
+    });
+
+    if (!supplierExists) {
+      res.status(400).json({ message: "Invalid supplier ID." });
+      return;
+    }
+
     const product = await prisma.products.create({
       data: {
-        productId,
         name,
         price,
         rating,
         stockQuantity,
+        supplierId,
+        status,
       },
     });
     res.status(201).json(product);
   } catch (error) {
-    res.status(500).json({ message: "Error creating product" });
+    console.error("Error creating product:", error);
+    if (error instanceof Error) {
+      res
+        .status(500)
+        .json({ message: "Error creating product", error: error.message });
+    } else {
+      res.status(500).json({ message: "Unknown error occurred" });
+    }
   }
 };
 
@@ -76,8 +102,15 @@ export const updateProduct = async (
 ): Promise<void> => {
   try {
     const { productId } = req.params;
-    const { name, price, stockQuantity, rating } = req.body;
-    console.log("Data to update:", { name, price, stockQuantity, rating });
+    const { name, price, stockQuantity, rating, supplierId, status } = req.body;
+    console.log("Data to update:", {
+      name,
+      price,
+      stockQuantity,
+      rating,
+      supplierId,
+      status,
+    });
 
     // Check if the product exists
     const existingProduct = await prisma.products.findUnique({
@@ -97,6 +130,8 @@ export const updateProduct = async (
         price: Number(price),
         stockQuantity: Number(stockQuantity),
         rating: Number(rating),
+        supplierId,
+        status,
       },
     });
     console.log("Updated product:", updatedProduct);
@@ -114,5 +149,26 @@ export const updateProduct = async (
       console.error("Unexpected error:", error);
       res.status(500).json({ message: "Unexpected error" });
     }
+  }
+};
+
+export const getProductsBySupplier = async (req: Request, res: Response) => {
+  const { supplierId } = req.params;
+
+  try {
+    const products = await prisma.products.findMany({
+      where: { supplierId },
+    });
+
+    if (!products || products.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No products found for this supplier" });
+    }
+
+    res.status(200).json(products);
+  } catch (error) {
+    console.error("Error fetching products by supplier:", error);
+    res.status(500).json({ message: "Failed to fetch products by supplier" });
   }
 };

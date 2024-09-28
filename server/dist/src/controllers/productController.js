@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateProduct = exports.deleteProduct = exports.createProduct = exports.getProducts = void 0;
+exports.getProductsBySupplier = exports.updateProduct = exports.deleteProduct = exports.createProduct = exports.getProducts = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
@@ -24,6 +24,9 @@ const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
                     mode: "insensitive",
                 },
             },
+            include: {
+                supplier: true,
+            },
         });
         res.json(products);
     }
@@ -34,20 +37,41 @@ const getProducts = (req, res) => __awaiter(void 0, void 0, void 0, function* ()
 exports.getProducts = getProducts;
 const createProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
-        const { productId, name, price, rating, stockQuantity } = req.body;
+        const { name, price, rating, stockQuantity, supplierId, status } = req.body;
+        console.log(req.body);
+        if (!name || !price || !stockQuantity || !supplierId || !status) {
+            res.status(400).json({ message: "All fields are required." });
+            return;
+        }
+        const supplierExists = yield prisma.suppliers.findUnique({
+            where: { supplierId },
+        });
+        if (!supplierExists) {
+            res.status(400).json({ message: "Invalid supplier ID." });
+            return;
+        }
         const product = yield prisma.products.create({
             data: {
-                productId,
                 name,
                 price,
                 rating,
                 stockQuantity,
+                supplierId,
+                status,
             },
         });
         res.status(201).json(product);
     }
     catch (error) {
-        res.status(500).json({ message: "Error creating product" });
+        console.error("Error creating product:", error);
+        if (error instanceof Error) {
+            res
+                .status(500)
+                .json({ message: "Error creating product", error: error.message });
+        }
+        else {
+            res.status(500).json({ message: "Unknown error occurred" });
+        }
     }
 });
 exports.createProduct = createProduct;
@@ -73,8 +97,15 @@ exports.deleteProduct = deleteProduct;
 const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
     try {
         const { productId } = req.params;
-        const { name, price, stockQuantity, rating } = req.body;
-        console.log("Data to update:", { name, price, stockQuantity, rating });
+        const { name, price, stockQuantity, rating, supplierId, status } = req.body;
+        console.log("Data to update:", {
+            name,
+            price,
+            stockQuantity,
+            rating,
+            supplierId,
+            status,
+        });
         // Check if the product exists
         const existingProduct = yield prisma.products.findUnique({
             where: { productId },
@@ -91,6 +122,8 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
                 price: Number(price),
                 stockQuantity: Number(stockQuantity),
                 rating: Number(rating),
+                supplierId,
+                status,
             },
         });
         console.log("Updated product:", updatedProduct);
@@ -113,3 +146,22 @@ const updateProduct = (req, res) => __awaiter(void 0, void 0, void 0, function* 
     }
 });
 exports.updateProduct = updateProduct;
+const getProductsBySupplier = (req, res) => __awaiter(void 0, void 0, void 0, function* () {
+    const { supplierId } = req.params;
+    try {
+        const products = yield prisma.products.findMany({
+            where: { supplierId },
+        });
+        if (!products || products.length === 0) {
+            return res
+                .status(404)
+                .json({ message: "No products found for this supplier" });
+        }
+        res.status(200).json(products);
+    }
+    catch (error) {
+        console.error("Error fetching products by supplier:", error);
+        res.status(500).json({ message: "Failed to fetch products by supplier" });
+    }
+});
+exports.getProductsBySupplier = getProductsBySupplier;

@@ -9,6 +9,7 @@ type ProductFormData = {
   stockQuantity: number;
   supplierId: string;
   rating: number;
+  status: "active" | "inactive";
 };
 
 type Supplier = {
@@ -23,13 +24,13 @@ type CreateProductProps = {
 };
 
 const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
-  const [formData, setFormData] = useState({
-    productId: v4(),
+  const [formData, setFormData] = useState<ProductFormData>({
     name: "",
     price: 0,
     stockQuantity: 0,
     supplierId: "",
     rating: 0,
+    status: "active",
   });
 
   const { data: suppliers, isLoading: isSuppliersLoading } =
@@ -46,12 +47,15 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
           ? value === ""
             ? 0
             : parseFloat(value)
+          : name === "status"
+          ? (value as "active" | "inactive")
           : value,
     });
   };
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    console.log(formData, "Submitting");
     onCreate(formData);
     onClose();
   };
@@ -85,6 +89,7 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
           >
             Supplier
           </label>
+
           <select
             name="supplierId"
             value={formData.supplierId}
@@ -92,6 +97,7 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
             className="block w-full mb-2 p-2 border-gray-500 border-2 rounded-md"
             required
           >
+            <option value="">Select a supplier</option>
             {isSuppliersLoading ? (
               <option>Loading suppliers...</option>
             ) : (
@@ -155,6 +161,18 @@ const CreateProduct = ({ isOpen, onClose, onCreate }: CreateProductProps) => {
             className="block w-full mb-2 p-2 border-gray-500 border-2 rounded-md"
             required
           />
+
+          <label
+            htmlFor="status"
+            className="block text-sm font-medium text-gray-700"
+          >
+            Status
+          </label>
+
+          <select name="status" value={formData.status} onChange={handleChange}>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
 
           <button
             type="submit"

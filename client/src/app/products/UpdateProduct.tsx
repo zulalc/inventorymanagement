@@ -8,6 +8,7 @@ type UpdateProductData = {
   supplierId: string;
   stockQuantity: number;
   rating?: number;
+  status: string;
 };
 
 type Supplier = {
@@ -123,6 +124,20 @@ const UpdateProduct = ({
               step="0.001"
             />
           </div>
+
+          <div className="mb-4">
+            <label className="block text-gray-700">Status</label>
+            <select
+              name="status"
+              value={formData.status}
+              onChange={handleChange}
+              className="border rounded w-full py-2 px-3"
+            >
+              <option value="active">Active</option>
+              <option value="inactive">Inactive</option>
+            </select>
+          </div>
+
           <div className="flex justify-end">
             <button
               type="button"
