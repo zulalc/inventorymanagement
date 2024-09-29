@@ -22,6 +22,7 @@ import Header from "../(components)/Header";
 import CreateProduct from "@/app/products/CreateProduct";
 import DeleteProduct from "@/app/products/DeleteProduct";
 import UpdateProduct from "@/app/products/UpdateProduct";
+import Image from "next/image";
 
 type ProductFormData = {
   name: string;
@@ -284,6 +285,17 @@ const Products = () => {
                   >
                     <div className="flex flex-col items-center">
                       {/* Image placeholder */}
+
+                      <Image
+                        src={`https://s3-inventorym.s3.eu-central-1.amazonaws.com/product${
+                          Math.floor(Math.random() * 3) + 1
+                        }.jpg`}
+                        alt="Products"
+                        width={150}
+                        height={150}
+                        className="mb-3 rounded-2xl w-36 h-36"
+                      />
+
                       <h3 className="text-lg text-gray-900 font-semibold">
                         {product.name}
                       </h3>

@@ -12,6 +12,7 @@ import Header from "../(components)/Header";
 import CreateSupplier from "@/app/suppliers/CreateSupplier";
 import DeleteSupplier from "@/app/suppliers/DeleteSupplier";
 import UpdateSupplier from "@/app/suppliers/UpdateSupplier";
+import Image from "next/image";
 
 type SupplierFormData = {
   name: string;
@@ -213,7 +214,15 @@ const Suppliers = () => {
                 >
                   <div className="flex flex-col items-center">
                     {/* Placeholder for supplier image */}
-                    <div className="bg-gray-200 w-24 h-24 mb-4"></div>
+                    <Image
+                      src={`https://s3-inventorym.s3.eu-central-1.amazonaws.com/product${
+                        Math.floor(Math.random() * 3) + 1
+                      }.jpg`}
+                      alt="Products"
+                      width={150}
+                      height={150}
+                      className="mb-3 rounded-2xl w-36 h-36"
+                    />
                     <h3 className="text-lg text-gray-900 font-semibold">
                       {supplier.name}
                     </h3>

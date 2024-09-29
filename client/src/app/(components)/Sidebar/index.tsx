@@ -15,6 +15,7 @@ import {
   User,
 } from "react-feather";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 
 const Sidebar = () => {
   const dispatch = useAppDispatch();
@@ -35,7 +36,13 @@ const Sidebar = () => {
           isSidebarOpen ? "px-5" : "px-8"
         }`}
       >
-        <div>LOGO</div>
+        <Image
+          src="https://s3-inventorym.s3.eu-central-1.amazonaws.com/logo.png"
+          alt="inventory-logo"
+          width={27}
+          height={27}
+          className="rounded-full h-full object-cover"
+        />
         <h1
           className={`${
             isSidebarOpen ? "hidden" : "block"
