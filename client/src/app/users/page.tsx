@@ -41,7 +41,7 @@ const Users = () => {
                 />
               </div>
             </div>
-            <Header name="Inventory" />
+            <Header name="Users" />
             <DataGrid
               rows={users}
               columns={columns}
