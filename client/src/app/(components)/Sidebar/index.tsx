@@ -18,6 +18,7 @@ import { usePathname } from "next/navigation";
 import Image from "next/image";
 
 const Sidebar = () => {
+  const pathname = usePathname();
   const dispatch = useAppDispatch();
   const isSidebarOpen = useAppSelector((state) => state.global.isSidebarOpen);
   const toggleSidebar = () => {
@@ -65,8 +66,8 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/dashboard" ||
-              (usePathname() === "/" && "/dashboard" === "/dashboard")
+              pathname === "/dashboard" ||
+              (pathname === "/" && "/dashboard" === "/dashboard")
                 ? "bg-violet-200 text-white"
                 : ""
             }`}
@@ -87,7 +88,7 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/analytics" ? "bg-violet-200 text-white" : ""
+              pathname === "/analytics" ? "bg-violet-200 text-white" : ""
             }`}
           >
             <BarChart2 className="w-6 h-6 !text-gray-700" />
@@ -106,7 +107,7 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/inventory" ? "bg-violet-200 text-white" : ""
+              pathname === "/inventory" ? "bg-violet-200 text-white" : ""
             }`}
           >
             <Archive className="w-6 h-6 !text-gray-700" />
@@ -125,7 +126,7 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/products" ? "bg-violet-200 text-white" : ""
+              pathname === "/products" ? "bg-violet-200 text-white" : ""
             }`}
           >
             <Clipboard className="w-6 h-6 !text-gray-700" />
@@ -144,7 +145,7 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/suppliers" ? "bg-violet-200 text-white" : ""
+              pathname === "/suppliers" ? "bg-violet-200 text-white" : ""
             }`}
           >
             <Truck className="w-6 h-6 !text-gray-700" />
@@ -163,7 +164,7 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/users" ? "bg-violet-200 text-white" : ""
+              pathname === "/users" ? "bg-violet-200 text-white" : ""
             }`}
           >
             <User className="w-6 h-6 !text-gray-700" />
@@ -182,7 +183,7 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/expenses" ? "bg-violet-200 text-white" : ""
+              pathname === "/expenses" ? "bg-violet-200 text-white" : ""
             }`}
           >
             <DollarSign className="w-6 h-6 !text-gray-700" />
@@ -201,7 +202,7 @@ const Sidebar = () => {
             className={`cursor-pointer flex items-center ${
               isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
             } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              usePathname() === "/settings" ? "bg-violet-200 text-white" : ""
+              pathname === "/settings" ? "bg-violet-200 text-white" : ""
             }`}
           >
             <Sliders className="w-6 h-6 !text-gray-700" />
