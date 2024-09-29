@@ -59,7 +59,7 @@ const TotalNumberCard = () => {
             </Link>
 
             {/* Purchases Card */}
-            <div className="p-2 md:p-4 rounded-lg shadow-md bg-[#C8E6C9] flex items-start justify-between text-decoration-none">
+            <div className="p-2 md:p-4 rounded-lg shadow-md bg-[#BBDEFB] flex items-start justify-between text-decoration-none">
               <div>
                 <h2 className="text-sm md:text-lg font-semibold text-gray-700">
                   Purchases
