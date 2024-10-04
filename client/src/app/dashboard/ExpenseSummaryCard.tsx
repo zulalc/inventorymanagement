@@ -48,24 +48,26 @@ const ExpensePieChartCard = () => {
       <h3 className="text-lg font-semibold mb-2 px-7 pt-5">Expenses Summary</h3>
       <hr />
       {isLoading ? (
-        <div
-          className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-violet-500 motion-reduce:animate-[spin_1.5s_linear_infinite]"
-          role="status"
-        ></div>
+        <div className="flex items-center justify-center h-full w-full">
+          <div
+            className="inline-block h-8 w-8 animate-spin rounded-full border-4 border-solid border-current border-r-transparent align-[-0.125em] text-violet-500 motion-reduce:animate-[spin_1.5s_linear_infinite]"
+            role="status"
+          ></div>
+        </div>
       ) : (
         <>
           <div>
-            <div className="mb-4 mt-4 px-7">
-              <div className="flex items-center">
+            <div className="mb-4 mt-4 px-4 md:px-7 sm:px-6">
+              <div className="flex items-center justify-center">
                 <ResponsiveContainer width="100%" height={360} className="p-1">
-                  <PieChart width={300} height={300} className="mb-5">
+                  <PieChart width={300} height={300}>
                     <Pie
                       data={chartData}
                       dataKey="amount"
                       nameKey="category"
                       cx="50%"
                       cy="50%"
-                      outerRadius={130}
+                      outerRadius="70%"
                       fill="#00C49F"
                       label
                     >

@@ -1,6 +1,6 @@
 //setup for next.js and localstorage
 //if user came back to page data is stored -- redux-persist
-import { useRef } from "react"; //hook to create a persistent reference that does NOT change across renders
+import { useEffect, useRef } from "react"; //hook to create a persistent reference that does NOT change across renders
 import {
   combineReducers,
   configureStore, //simplify creation of redux store with good defaults
@@ -12,6 +12,7 @@ import {
   Provider, //wraps app and makes redux store available to all components
 } from "react-redux";
 import globalReducer from "@/state";
+import authReducer from "@/state/authSlice";
 import { api } from "@/state/api";
 import { setupListeners } from "@reduxjs/toolkit/query";
 
@@ -53,9 +54,10 @@ const storage =
 const persistConfig = {
   key: "root",
   storage, //localStorage
-  whitelist: ["global"], //reducer names whose state should be PERSISTED
+  whitelist: ["global", "auth"], //reducer names whose state should be PERSISTED
 };
 const rootReducer = combineReducers({
+  auth: authReducer,
   global: globalReducer, //states
   [api.reducerPath]: api.reducer, //api calls
 });
@@ -68,19 +70,7 @@ export const makeStore = () => {
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware({
         serializableCheck: {
-          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER], // actions involve non-serializable data, so that we ignore unnecessary warnings and errors
-          //they might involve functions or references to objects that dont serialize well
-          /*Non-Serializable
-            When something is non-serializable, it means it cannot be easily converted into such a format. 
-            This is often because it contains data types or structures that don’t have a straightforward representation as a simple string or number. 
-            Common examples of non-serializable items in JavaScript include:
-
-Functions: Functions cannot be serialized because their internal state and execution context are lost when converted to a string.
-Promises: Promises represent future values and their state (pending, fulfilled, or rejected) cannot be serialized.
-Symbols: Symbols are unique and cannot be represented in a serialized format.
-DOM elements: DOM elements represent parts of the document and cannot be serialized as simple data.
-Class instances: Instances of custom classes might have methods and internal state that cannot be easily serialized.
-            */
+          ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
         },
       }).concat(api.middleware),
   });
@@ -101,6 +91,7 @@ export default function StoreProvider({
   children: React.ReactNode;
 }) {
   const storeRef = useRef<AppStore>(); // create a persistent referenece to the store across re-renders
+
   if (!storeRef.current) {
     storeRef.current = makeStore(); //if not created, create the store
     setupListeners(storeRef.current.dispatch); // automatic re-fetching of data

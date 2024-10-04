@@ -53,21 +53,21 @@ export const getDashboardData = async (
     });
 
     const salesSummary = await prisma.salesSummary.findMany({
-      take: 5,
+      take: 35,
       orderBy: {
         date: "desc",
       },
     });
 
     const purchaseSummary = await prisma.purchaseSummary.findMany({
-      take: 5,
+      take: 15,
       orderBy: {
         date: "desc",
       },
     });
 
     const expenseSummary = await prisma.expenseSummary.findMany({
-      take: 5,
+      take: 15,
       orderBy: {
         date: "desc",
       },

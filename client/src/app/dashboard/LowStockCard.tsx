@@ -1,5 +1,6 @@
 import { useGetDashboardDataQuery } from "@/state/api";
 import { Rating } from "@mui/material";
+import Image from "next/image";
 import React from "react";
 import { AlertCircle, XCircle } from "react-feather";
 
@@ -28,10 +29,20 @@ const LowStockCard = () => {
             {dashboardData?.lowStockProducts.map((product) => (
               <div
                 key={product.productId}
-                className="flex items-center justify-between gap-3 px-5 py-5 border-b last:border-none"
+                className="flex flex-col md:flex-row items-start md:items-center justify-between gap-2 px-4 py-4 border-b last:border-none"
               >
                 <div className="flex items-center gap-3">
-                  <div>img</div>
+                  <div>
+                    <Image
+                      src={`https://s3-inventorym.s3.eu-central-1.amazonaws.com/product${
+                        Math.floor(Math.random() * 3) + 1
+                      }.jpg`}
+                      alt={product.name}
+                      width={25}
+                      height={25}
+                      className="rounded-lg w-14 h-14"
+                    />
+                  </div>
                   <div className="flex flex-col justify-between gap-1">
                     <div className="font-bold text-base text-gray-700">
                       {product.name}
@@ -46,14 +57,14 @@ const LowStockCard = () => {
                   </div>
                 </div>
 
-                <div className="flex items-center gap-2">
+                <div className="flex items-center gap-2 ml-auto">
                   {product.stockQuantity === 0 ? (
                     <div className="p-2 rounded-full bg-red-100 text-red-600">
-                      <XCircle className="w-6 h-6" />
+                      <XCircle className="w-5 h-5" />
                     </div>
                   ) : (
                     <div className="p-2 rounded-full bg-orange-100 text-orange-600">
-                      <AlertCircle className="w-6 h-6" />
+                      <AlertCircle className="w-5 h-5" />
                     </div>
                   )}
                   <span

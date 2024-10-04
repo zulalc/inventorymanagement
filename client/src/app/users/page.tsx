@@ -5,6 +5,7 @@ import Header from "../(components)/Header";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { useState } from "react";
 import { Search } from "react-feather";
+import { useMediaQuery } from "@mui/material";
 
 const columns: GridColDef[] = [
   { field: "userId", headerName: "ID", width: 150 },
@@ -15,6 +16,7 @@ const columns: GridColDef[] = [
 const Users = () => {
   const [searchWord, setSearchWord] = useState("");
   const { data: users, isLoading, isError } = useGetUsersQuery(searchWord);
+  const isMobile = useMediaQuery("(max-width:600px)");
   return (
     <div>
       <hr />
@@ -42,24 +44,51 @@ const Users = () => {
               </div>
             </div>
             <Header name="Users" />
-            <DataGrid
-              rows={users}
-              columns={columns}
-              getRowId={(row) => row.userId}
-              checkboxSelection
-              className="bg-white shadow rounded-lg border border-gray-00 mt-5 !text-gray-700"
-              sx={{
-                "& .Mui-checked": {
-                  color: "#8b5cf6 !important",
-                },
-                "& .MuiCheckbox-indeterminate .MuiSvgIcon-root": {
-                  color: "#8b5cf6",
-                },
-                "& .MuiDataGrid-cell:hover": {
-                  color: "#8b5cf6",
-                },
-              }}
-            />
+
+            {isMobile ? (
+              <div>
+                {users?.map((row) => (
+                  <div
+                    key={row.userId}
+                    className="p-4 bg-white rounded-md shadow mb-4"
+                  >
+                    <div className="flex flex-col">
+                      <div className="flex justify-between">
+                        <span className="font-semibold">ID:</span>
+                        <span className="text-xs">{row.userId}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Name:</span>
+                        <span>{row.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Email:</span>
+                        <span>{row.email}</span>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <DataGrid
+                rows={users}
+                columns={columns}
+                getRowId={(row) => row.userId}
+                checkboxSelection
+                className="bg-white shadow rounded-lg border border-gray-00 mt-5 !text-gray-700"
+                sx={{
+                  "& .Mui-checked": {
+                    color: "#8b5cf6 !important",
+                  },
+                  "& .MuiCheckbox-indeterminate .MuiSvgIcon-root": {
+                    color: "#8b5cf6",
+                  },
+                  "& .MuiDataGrid-cell:hover": {
+                    color: "#8b5cf6",
+                  },
+                }}
+              />
+            )}
           </div>
         </>
       )}

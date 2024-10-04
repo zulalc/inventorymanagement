@@ -8,6 +8,7 @@ const dotenv_1 = __importDefault(require("dotenv"));
 const cors_1 = __importDefault(require("cors"));
 const helmet_1 = __importDefault(require("helmet"));
 const morgan_1 = __importDefault(require("morgan"));
+const authMiddleware_1 = __importDefault(require("./middleware/authMiddleware"));
 /* ROUTES IMPORTS*/
 const dashboardRoutes_1 = __importDefault(require("./routes/dashboardRoutes"));
 const analyticsRoutes_1 = __importDefault(require("./routes/analyticsRoutes"));
@@ -28,12 +29,12 @@ app.use((0, morgan_1.default)("common"));
 app.use((0, cors_1.default)());
 /*ROUTES*/
 app.use("/", loginRoutes_1.default); // http://localhost:8000/login
-app.use("/dashboard", dashboardRoutes_1.default); // http://localhost:8000/dashboard
-app.use("/analytics", analyticsRoutes_1.default); // http://localhost:8000/dashboard
-app.use("/products", productRoutes_1.default); // http://localhost:8000/products
-app.use("/suppliers", supplierRoutes_1.default); // http://localhost:8000/products
-app.use("/users", userRoutes_1.default); // http://localhost:8000/users
-app.use("/expenses", expenseRoutes_1.default); // http://localhost:8000/expenses
+app.use("/dashboard", authMiddleware_1.default, dashboardRoutes_1.default); // http://localhost:8000/dashboard
+app.use("/analytics", authMiddleware_1.default, analyticsRoutes_1.default); // http://localhost:8000/dashboard
+app.use("/products", authMiddleware_1.default, productRoutes_1.default); // http://localhost:8000/products
+app.use("/suppliers", authMiddleware_1.default, supplierRoutes_1.default); // http://localhost:8000/products
+app.use("/users", authMiddleware_1.default, userRoutes_1.default); // http://localhost:8000/users
+app.use("/expenses", authMiddleware_1.default, expenseRoutes_1.default); // http://localhost:8000/expenses
 /*SERVER*/
 const port = Number(process.env.PORT) || 3002;
 app.listen(port, "0.0.0.0", () => {

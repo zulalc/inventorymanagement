@@ -26,12 +26,12 @@ app.use(cors());
 
 /*ROUTES*/
 app.use("/", loginRoutes); // http://localhost:8000/login
-app.use("/dashboard", dashboardRoutes); // http://localhost:8000/dashboard
-app.use("/analytics", analyticsRoutes); // http://localhost:8000/dashboard
-app.use("/products", productRoutes); // http://localhost:8000/products
-app.use("/suppliers", supplierRoutes); // http://localhost:8000/products
-app.use("/users", userRoutes); // http://localhost:8000/users
-app.use("/expenses", expenseRoutes); // http://localhost:8000/expenses
+app.use("/dashboard", authMiddleware, dashboardRoutes); // http://localhost:8000/dashboard
+app.use("/analytics", authMiddleware, analyticsRoutes); // http://localhost:8000/dashboard
+app.use("/products", authMiddleware, productRoutes); // http://localhost:8000/products
+app.use("/suppliers", authMiddleware, supplierRoutes); // http://localhost:8000/products
+app.use("/users", authMiddleware, userRoutes); // http://localhost:8000/users
+app.use("/expenses", authMiddleware, expenseRoutes); // http://localhost:8000/expenses
 
 /*SERVER*/
 const port = Number(process.env.PORT) || 3002;

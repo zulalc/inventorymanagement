@@ -17,6 +17,7 @@ import {
   CartesianGrid,
 } from "recharts";
 import { useGetAnalyticsDataQuery } from "@/state/api";
+import { useMediaQuery } from "@mui/material";
 
 const COLORS = ["#6c5b9e", "#f5a6b1", "#4db6ac", "#ffbb28"];
 
@@ -28,6 +29,8 @@ type ExpenseGroup = {
 };
 
 const Analytics = () => {
+  const isMobile = useMediaQuery("(max-width:600px)");
+
   const [expenseStartDate, setExpenseStartDate] = useState<Date | null>(null);
   const [expenseEndDate, setExpenseEndDate] = useState<Date | null>(null);
 
@@ -82,7 +85,7 @@ const Analytics = () => {
       )
     : [];
 
-  const rowData = analyticsData
+  const expenseData = analyticsData
     ? filterByDateRange(
         analyticsData.expenseByCategorySummary.map((expense) => ({
           id: idCounter++,
@@ -113,12 +116,19 @@ const Analytics = () => {
   });
 
   const expenseColumns: GridColDef[] = [
-    { field: "category", headerName: "Category", width: 150 },
-    { field: "amount", headerName: "Amount", width: 120, type: "number" },
+    { field: "category", headerName: "Category", flex: 2, minWidth: 150 },
+    {
+      field: "amount",
+      headerName: "Amount",
+      flex: 1,
+      minWidth: 120,
+      type: "number",
+    },
     {
       field: "date",
       headerName: "Date",
-      width: 150,
+      flex: 2,
+      minWidth: 150,
       valueFormatter: (params) => {
         if (!params) {
           return "No Date";
@@ -251,7 +261,7 @@ const Analytics = () => {
                     nameKey="category"
                     cx="50%"
                     cy="50%"
-                    outerRadius={130}
+                    outerRadius="70%"
                     fill="#00C49F"
                     label
                   >
@@ -268,13 +278,44 @@ const Analytics = () => {
               </ResponsiveContainer>
 
               <div className="mt-6" style={{ height: 400, overflowY: "auto" }}>
-                <DataGrid
-                  rows={rowData}
-                  columns={expenseColumns}
-                  getRowId={(row) => row.id}
-                  pagination
-                  style={{ maxHeight: 400 }}
-                />
+                {isMobile ? (
+                  // Render mobile-friendly layout
+                  <div>
+                    {expenseData.map((row) => (
+                      <div
+                        key={row.id}
+                        className="p-4 bg-white rounded-md shadow mb-4"
+                      >
+                        <div className="flex flex-col">
+                          <div className="flex justify-between">
+                            <span className="font-semibold">Category:</span>
+                            <span>{row.category}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">Amount:</span>
+                            <span>${row.amount}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">Date:</span>
+                            <span>
+                              {new Date(row.date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  // Render DataGrid for larger screens
+                  <DataGrid
+                    rows={expenseData}
+                    columns={expenseColumns}
+                    getRowId={(row) => row.id}
+                    pagination
+                    autoHeight
+                    style={{ width: "100%" }}
+                  />
+                )}
               </div>
             </>
           )}
@@ -319,18 +360,31 @@ const Analytics = () => {
             <div className="text-red-600 mt-4">Failed to fetch data</div>
           ) : (
             <>
-              <ResponsiveContainer width="100%" height={360} className="mt-5">
-                <BarChart data={salesData}>
+              <ResponsiveContainer
+                width="100%"
+                height={isMobile ? 300 : 500}
+                className="mt-5"
+              >
+                <BarChart
+                  data={salesData}
+                  margin={{
+                    top: 20,
+                    right: 0,
+                    left: -25,
+                    bottom: 5,
+                  }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="date"
                     tickFormatter={(date) =>
                       new Date(date).toLocaleDateString("en-US")
                     }
+                    tick={{ fontSize: isMobile ? 10 : 12 }}
                   />
                   <YAxis
                     tickLine={false}
-                    tick={{ fontSize: 12, dx: -1 }}
+                    tick={{ fontSize: isMobile ? 10 : 12, dx: -1 }}
                     axisLine={false}
                     tickFormatter={(value) =>
                       `${(value / 1000000).toFixed(0)}M`
@@ -355,13 +409,52 @@ const Analytics = () => {
               </ResponsiveContainer>
 
               <div className="mt-6" style={{ height: 400, overflowY: "auto" }}>
-                <DataGrid
-                  rows={salesData}
-                  columns={salesColumns}
-                  getRowId={(row) => row.salesSummaryId}
-                  pagination
-                  style={{ maxHeight: 400 }}
-                />
+                {isMobile ? (
+                  <div>
+                    {salesData.map((row) => (
+                      <div
+                        key={row.id}
+                        className="p-4 bg-white rounded-md shadow mb-4"
+                      >
+                        <div className="flex flex-col">
+                          <div className="flex justify-between">
+                            <span className="font-semibold">ID:</span>
+                            <span className="text-xs">
+                              {row.salesSummaryId}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">Total Value:</span>
+                            <span>
+                              {row.totalValue.toLocaleString("en-US")}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">
+                              Change Percentage:
+                            </span>
+                            <span>%{row.changePercentage}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">Date:</span>
+                            <span>
+                              {new Date(row.date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <DataGrid
+                    rows={salesData}
+                    columns={salesColumns}
+                    getRowId={(row) => row.salesSummaryId}
+                    pagination
+                    autoHeight
+                    style={{ width: "100%" }}
+                  />
+                )}
               </div>
             </>
           )}
@@ -406,17 +499,26 @@ const Analytics = () => {
           ) : (
             <>
               <ResponsiveContainer width="100%" height={360} className="mt-5">
-                <BarChart data={purchaseData}>
+                <BarChart
+                  data={purchaseData}
+                  margin={{
+                    top: 20,
+                    right: 0,
+                    left: -25,
+                    bottom: 5,
+                  }}
+                >
                   <CartesianGrid strokeDasharray="3 3" />
                   <XAxis
                     dataKey="date"
+                    tick={{ fontSize: isMobile ? 10 : 12 }}
                     tickFormatter={(date) =>
                       new Date(date).toLocaleDateString("en-US")
                     }
                   />
                   <YAxis
                     tickLine={false}
-                    tick={{ fontSize: 12, dx: -1 }}
+                    tick={{ fontSize: isMobile ? 10 : 12, dx: -1 }}
                     axisLine={false}
                     tickFormatter={(value) =>
                       `${(value / 1000000).toFixed(0)}M`
@@ -441,13 +543,54 @@ const Analytics = () => {
               </ResponsiveContainer>
 
               <div className="mt-6" style={{ height: 400, overflowY: "auto" }}>
-                <DataGrid
-                  rows={purchaseData}
-                  columns={purchaseColumns}
-                  getRowId={(row) => row.purchaseSummaryId}
-                  pagination
-                  style={{ maxHeight: 400 }}
-                />
+                {isMobile ? (
+                  <div>
+                    {purchaseData.map((row) => (
+                      <div
+                        key={row.id}
+                        className="p-4 bg-white rounded-md shadow mb-4"
+                      >
+                        <div className="flex flex-col">
+                          <div className="flex justify-between">
+                            <span className="font-semibold">ID:</span>
+                            <span className="text-xs">
+                              {row.purchaseSummaryId}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">
+                              Total Purchased:
+                            </span>
+                            <span>
+                              {row.totalPurchased.toLocaleString("en-US")}
+                            </span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">
+                              Change Percentage:
+                            </span>
+                            <span>%{row.changePercentage}</span>
+                          </div>
+                          <div className="flex justify-between">
+                            <span className="font-semibold">Date:</span>
+                            <span>
+                              {new Date(row.date).toLocaleDateString()}
+                            </span>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                ) : (
+                  <DataGrid
+                    rows={salesData}
+                    columns={salesColumns}
+                    getRowId={(row) => row.salesSummaryId}
+                    pagination
+                    autoHeight
+                    style={{ width: "100%" }}
+                  />
+                )}
               </div>
             </>
           )}

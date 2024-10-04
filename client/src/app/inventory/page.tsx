@@ -3,9 +3,10 @@ import { useGetProductsQuery, useGetSuppliersQuery } from "@/state/api";
 import Header from "../(components)/Header";
 import { DataGrid, GridColDef } from "@mui/x-data-grid";
 import { AlertCircle, XCircle } from "react-feather";
-import { Rating } from "@mui/material";
+import { Rating, useMediaQuery } from "@mui/material";
 
 const Inventory = () => {
+  const isMobile = useMediaQuery("(max-width:600px)");
   const {
     data: products,
     isLoading: productsLoading,
@@ -101,13 +102,56 @@ const Inventory = () => {
         <>
           <div className="flex flex-col">
             <Header name="Inventory" />
-            <DataGrid
-              rows={products}
-              columns={columns}
-              getRowId={(row) => row.productId}
-              checkboxSelection
-              className="bg-white shadow rounded-lg border border-gray-00 mt-5 !text-gray-700"
-            />
+
+            {isMobile ? (
+              <div>
+                {products?.map((row) => (
+                  <div
+                    key={row.productId}
+                    className="p-4 bg-white rounded-md shadow mb-4"
+                  >
+                    <div className="flex flex-col">
+                      <div className="flex justify-between">
+                        <span className="font-semibold">ID:</span>
+                        <span className="text-xs">{row.productId}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Name:</span>
+                        <span>{row.name}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Supplier:</span>
+                        <span>
+                          {supplierMap?.[row.supplierId] || "Unknown"}
+                        </span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Price:</span>
+                        <span>${row.price}</span>
+                      </div>
+
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Stock Quantity:</span>
+                        <span>{row.stockQuantity}</span>
+                      </div>
+                      <div className="flex justify-between">
+                        <span className="font-semibold">Rating:</span>
+                        <Rating defaultValue={row.rating || 0} readOnly />
+                        {row.rating}
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            ) : (
+              <DataGrid
+                rows={products}
+                columns={columns}
+                getRowId={(row) => row.productId}
+                checkboxSelection
+                className="bg-white shadow rounded-lg border border-gray-00 mt-5 !text-gray-700"
+              />
+            )}
           </div>
         </>
       )}

@@ -1,8 +1,7 @@
 "use client";
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { setIsSidebarOpen } from "@/state";
-import Link from "next/link";
-import React from "react";
+import React, { useState, useRef, useEffect } from "react";
 import {
   Archive,
   BarChart2,
@@ -15,21 +14,50 @@ import {
   User,
 } from "react-feather";
 import { usePathname } from "next/navigation";
+import Link from "next/link";
 import Image from "next/image";
 
-const Sidebar = () => {
+const Sidebar: React.FC = () => {
   const pathname = usePathname();
   const dispatch = useAppDispatch();
   const isSidebarOpen = useAppSelector((state) => state.global.isSidebarOpen);
+  const [touchStartX, setTouchStartX] = useState<number | null>(null);
+  const sidebarRef = useRef<HTMLDivElement>(null);
+
   const toggleSidebar = () => {
     dispatch(setIsSidebarOpen(!isSidebarOpen));
   };
 
+  const handleTouchStart = (e: React.TouchEvent) => {
+    setTouchStartX(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e: React.TouchEvent) => {
+    if (!touchStartX) return;
+    const touchEndX = e.touches[0].clientX;
+
+    if (isSidebarOpen && touchEndX > touchStartX + 50) {
+      //slide out when swiping right -->
+      toggleSidebar();
+    } else if (!isSidebarOpen && touchStartX - touchEndX > 50) {
+      //slide in when swiping left <__
+      toggleSidebar();
+    }
+  };
+
+  const handleTouchEnd = () => {
+    setTouchStartX(null);
+  };
+
   return (
     <div
+      ref={sidebarRef}
       className={`fixed flex flex-col ${
         isSidebarOpen ? "w-0 md:w-16" : "w-72 md:w-64"
       } bg-white transition-all duration-300 overflow-hidden h-full shadow-md z-40`}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
+      onTouchEnd={handleTouchEnd}
     >
       {/*LOGO*/}
       <div
@@ -40,9 +68,9 @@ const Sidebar = () => {
         <Image
           src="https://s3-inventorym.s3.eu-central-1.amazonaws.com/logo.png"
           alt="inventory-logo"
-          width={27}
-          height={27}
-          className="rounded-full h-full object-cover"
+          width={35}
+          height={30}
+          className="rounded-s h-full object-fill"
         />
         <h1
           className={`${
@@ -174,25 +202,6 @@ const Sidebar = () => {
               } font-medium text-gray-700`}
             >
               Users
-            </span>
-          </div>
-        </Link>
-
-        <Link href="/expenses">
-          <div
-            className={`cursor-pointer flex items-center ${
-              isSidebarOpen ? "justify-center py-4" : "justify-start px-8 py-4"
-            } hover:text-violet-500 hover:bg-violet-100 gap-3 transition-colors ${
-              pathname === "/expenses" ? "bg-violet-200 text-white" : ""
-            }`}
-          >
-            <DollarSign className="w-6 h-6 !text-gray-700" />
-            <span
-              className={`${
-                isSidebarOpen ? "hidden" : "block"
-              } font-medium text-gray-700`}
-            >
-              Expenses
             </span>
           </div>
         </Link>

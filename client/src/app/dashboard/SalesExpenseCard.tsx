@@ -16,15 +16,16 @@ const IncomeExpenseCard = () => {
   const salesData = data?.salesSummary || [];
   const expensesData = data?.expenseSummary || [];
 
-  const combinedData = salesData.map((item) => {
-    const expense = expensesData.find((exp) => exp.date === item.date);
+  const salesChartData = salesData.map((item) => ({
+    date: item.date,
+    sales: item.totalValue,
+  }));
 
-    return {
-      date: item.date,
-      sales: item.totalValue,
-      expenses: expense ? expense.totalExpenses : 0,
-    };
-  });
+  const expensesChartData = expensesData.map((item) => ({
+    date: item.date,
+    expenses: item.totalExpenses,
+  }));
+
   return (
     <div className="flex flex-col row-auto xl:row-auto md:col-auto xl:col-auto bg-white shadow-md rounded-2xl">
       <h3 className="text-lg font-semibold px-7 pt-5 mb-2">Sales & Expenses</h3>
@@ -42,8 +43,7 @@ const IncomeExpenseCard = () => {
             <p className="text-sm text-gray-400">Sales vs Expenses</p>
             <ResponsiveContainer width="100%" height={450} className="p-2">
               <LineChart
-                data={combinedData}
-                margin={{ top: 20, right: 0, left: -35, bottom: 20 }}
+                margin={{ top: 20, right: -200, left: -20, bottom: 20 }}
               >
                 <CartesianGrid strokeDasharray="3 3" />
                 <XAxis
@@ -67,8 +67,20 @@ const IncomeExpenseCard = () => {
                   }}
                 />
                 <Legend />
-                <Line type="monotone" dataKey="sales" stroke="#8884d8" />
-                <Line type="monotone" dataKey="expenses" stroke="#82ca9d" />
+                <Line
+                  type="monotone"
+                  dataKey="sales"
+                  data={salesChartData}
+                  stroke="#8884d8"
+                  dot={false}
+                />
+                <Line
+                  type="monotone"
+                  dataKey="expenses"
+                  data={expensesChartData}
+                  stroke="#82ca9d"
+                  dot={false}
+                />
               </LineChart>
             </ResponsiveContainer>
           </div>

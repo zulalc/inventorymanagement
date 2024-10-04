@@ -72,7 +72,7 @@ const PurchaseSummaryCard = () => {
             <ResponsiveContainer width="100%" height={300} className="p-3">
               <AreaChart
                 data={purchaseData}
-                margin={{ top: 0, right: 0, left: -35, bottom: 45 }}
+                margin={{ top: 0, right: 0, left: -30, bottom: 45 }}
               >
                 <XAxis
                   dataKey="date"

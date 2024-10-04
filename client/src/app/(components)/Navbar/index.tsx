@@ -2,16 +2,25 @@
 
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { setIsSidebarOpen } from "@/state";
+import { clearToken } from "@/state/authSlice";
 import Image from "next/image";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import React from "react";
-import { Bell, Menu, Search, Settings, Sun } from "react-feather";
+import { Bell, LogOut, Menu, Search, Settings, Sun } from "react-feather";
 
 const Navbar = () => {
   const dispatch = useAppDispatch();
+  const router = useRouter();
   const isSidebarOpen = useAppSelector((state) => state.global.isSidebarOpen);
   const toggleSidebar = () => {
     dispatch(setIsSidebarOpen(!isSidebarOpen));
+  };
+
+  const handleLogout = () => {
+    localStorage.removeItem("token");
+    dispatch(clearToken());
+    router.push("/");
   };
   return (
     <div className="flex justify-between items-center w-full mb-7 ">
@@ -48,9 +57,9 @@ const Navbar = () => {
             <Image
               src="https://s3-inventorym.s3.eu-central-1.amazonaws.com/profile.png"
               alt="Profile"
-              width={50}
-              height={50}
-              className="rounded-full h-full object-cover"
+              width={30}
+              height={30}
+              className="rounded-s h-full object-cover"
             />
             <span className="font-bold">Zülal</span>
           </div>
@@ -61,6 +70,15 @@ const Navbar = () => {
             size={20}
           />
         </Link>
+
+        <div className="relative">
+          <button onClick={handleLogout}>
+            <LogOut
+              className="cursor-pointer text-gray-500 hover:text-red-600 transition duration-800 ease-in-out"
+              size={20}
+            />
+          </button>
+        </div>
       </div>
     </div>
   );
