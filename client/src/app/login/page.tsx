@@ -9,6 +9,8 @@ import { useDispatch } from "react-redux";
 const LoginPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
+  const BASE_URL = process.env.BASE_URL;
+  const PORT = process.env.PORT;
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -17,7 +19,7 @@ const LoginPage = () => {
     const username = formData.get("username");
     const password = formData.get("password");
     try {
-      const response = await fetch("http://localhost:8000/", {
+      const response = await fetch(`${BASE_URL}${PORT}/`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
