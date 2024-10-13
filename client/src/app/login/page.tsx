@@ -9,7 +9,7 @@ import { useDispatch } from "react-redux";
 const LoginPage = () => {
   const router = useRouter();
   const dispatch = useDispatch();
-  const BASE_URL = process.env.BASE_URL;
+  const BASE_URL = process.env.NEXT_PUBLIC_BASE_URL;
   const PORT = process.env.PORT;
 
   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
