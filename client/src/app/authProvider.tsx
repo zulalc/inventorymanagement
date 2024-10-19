@@ -34,7 +34,7 @@ const components = {
 const AuthProvider = ({ children }: any) => {
   return (
     <div className="mt-5">
-      <Authenticator hideSignUp={true}>
+      <Authenticator hideSignUp={true} components={components}>
         {({ user }: any) =>
           user ? <div>{children}</div> : <h1>Please Sign In Below:</h1>
         }
