@@ -4,9 +4,9 @@ import React, { useEffect } from "react";
 import Navbar from "@/app/(components)/Navbar";
 import Sidebar from "./(components)/Sidebar";
 import StoreProvider, { useAppDispatch, useAppSelector } from "./redux";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { setToken } from "@/state/authSlice";
-import { useRouter } from "next/navigation";
+import AuthProvider from "./authProvider";
 
 const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
   const dispatch = useAppDispatch();
@@ -30,17 +30,13 @@ const DashboardLayout = ({ children }: { children: React.ReactNode }) => {
           : ""
       }`}
     >
-      {!isLoginPage && isAuthenticated && <Sidebar />}
+      <Sidebar />
       <main
-        className={`${
-          !isLoginPage && isAuthenticated
-            ? `flex flex-col w-full h-full py-7 px-9 bg-gray-50 ${
-                isSidebarOpen ? "md:pl-24" : "md:pl-72"
-              }`
-            : ""
+        className={`flex flex-col w-full h-full py-7 px-9 bg-gray-50 ${
+          isSidebarOpen ? "md:pl-24" : "md:pl-72"
         }`}
       >
-        {!isLoginPage && isAuthenticated && <Navbar />}
+        <Navbar />
         {children}
       </main>
     </div>
@@ -58,7 +54,9 @@ const DashboardWrapper = ({ children }: { children: React.ReactNode }) => {
   }, [router]);
   return (
     <StoreProvider>
-      <DashboardLayout>{children}</DashboardLayout>
+      <AuthProvider>
+        <DashboardLayout>{children}</DashboardLayout>
+      </AuthProvider>
     </StoreProvider>
   );
 };
