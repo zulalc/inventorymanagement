@@ -3,6 +3,7 @@
 import { useAppDispatch, useAppSelector } from "@/app/redux";
 import { setIsSidebarOpen } from "@/state";
 import { clearToken } from "@/state/authSlice";
+import { signOut } from "aws-amplify/auth";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -17,10 +18,12 @@ const Navbar = () => {
     dispatch(setIsSidebarOpen(!isSidebarOpen));
   };
 
-  const handleLogout = () => {
-    localStorage.removeItem("token");
-    dispatch(clearToken());
-    router.push("/");
+  const handleSignOut = async () => {
+    try {
+      await signOut();
+    } catch (error) {
+      console.error("Error signing out: ", error);
+    }
   };
   return (
     <div className="flex justify-between items-center w-full mb-7 ">
@@ -72,7 +75,7 @@ const Navbar = () => {
         </Link>
 
         <div className="relative">
-          <button onClick={handleLogout}>
+          <button onClick={handleSignOut}>
             <LogOut
               className="cursor-pointer text-gray-500 hover:text-red-600 transition duration-800 ease-in-out"
               size={20}
