@@ -1,6 +1,7 @@
-import { Authenticator } from "@aws-amplify/ui-react";
+import { Authenticator, useTheme, View } from "@aws-amplify/ui-react";
 import { Amplify } from "aws-amplify";
 import "@aws-amplify/ui-react/styles.css";
+import Image from "next/image";
 
 Amplify.configure({
   Auth: {
@@ -12,10 +13,28 @@ Amplify.configure({
   },
 });
 
+const components = {
+  Header() {
+    const { tokens } = useTheme();
+
+    return (
+      <View textAlign="center" padding={tokens.space.large}>
+        <Image
+          src="https://s3-inventorym.s3.eu-central-1.amazonaws.com/logo.png"
+          alt="inventory-logo"
+          width={50}
+          height={50}
+          className="rounded-md object-cover"
+        />
+      </View>
+    );
+  },
+};
+
 const AuthProvider = ({ children }: any) => {
   return (
     <div className="mt-5">
-      <Authenticator>
+      <Authenticator hideSignUp={true}>
         {({ user }: any) =>
           user ? <div>{children}</div> : <h1>Please Sign In Below:</h1>
         }
